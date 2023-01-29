@@ -16,9 +16,19 @@ class Target: public Runnable {
     byte gunShot;
 
     void pickRandomTarget() {
+      byte currentTarget;
+      currentTarget = activeTarget;
+      // Randomize.
       randomSeed(analogRead(0));
       activeTarget = random(targetCount) + 1;
-      if (activeTarget > targetCount || (activeTarget == this->targetId && !this->state != READY)) {
+      // Validate.
+      if (activeTarget == currentTarget) {
+        this->pickRandomTarget();
+      }
+      if (activeTarget > targetCount) {
+        this->pickRandomTarget();
+      }
+      if (activeTarget == this->targetId && !this->state != READY) {
         this->pickRandomTarget();
       }
       Serial.println("Active target " + String(activeTarget));
@@ -86,7 +96,7 @@ class Target: public Runnable {
               rgb.red();
               this->state = DROPPED;
               servo.drop();
-              activeTarget = 0;
+              this->pickRandomTarget();
             }
           }
           break;
