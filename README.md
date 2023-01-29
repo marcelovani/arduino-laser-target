@@ -21,6 +21,7 @@ emulators (links below), we use a script to combine all files into one file i.e.
 <img width="776" alt="Tinkercad project" src="https://user-images.githubusercontent.com/2162363/215312279-5ef01fd4-2fc6-4fd4-9c69-44b69fddefcc.png">
 
 ## Electronics
-Project
-Picture
+1. Project on [Tinkercad emulator](https://www.tinkercad.com/things/8t7ajQeRsDk-copy-of-astable-multivibrator-with-transistor/editel?tenant=circuits)
+
+<img width="1124" alt="Tinkercad electronics" src="https://user-images.githubusercontent.com/2162363/215312438-251dfe73-0eaf-4d4a-b7e8-b2f36ff1289d.png">
 
