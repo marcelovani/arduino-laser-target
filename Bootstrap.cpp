@@ -18,6 +18,6 @@ const byte targetDropPosition = 90;
 #else
   #define INFRA_ENABLED
   // Used to determine the delay to start and drop the target.
-  unsigned long targetStartDelay = 30
+  unsigned long targetStartDelay = 30;
   unsigned long targetDropDelay = 30;
 #endif

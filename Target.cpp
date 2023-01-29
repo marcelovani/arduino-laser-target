@@ -25,8 +25,6 @@ class Target: public Runnable {
     }
 
   public:
-    Target() {}
-
     Target(
         Laser &laserInstance,
         RgbLed &rgbInstance,
