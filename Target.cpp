@@ -16,7 +16,7 @@ class Target: public Runnable {
     byte gunShot;
 
     void pickRandomTarget() {
-      Serial.println("Active target " + String(activeTarget));
+      randomSeed(analogRead(0));
       activeTarget = random(targetCount) + 1;
       if (activeTarget > targetCount || (activeTarget == this->targetId && !this->state != READY)) {
         this->pickRandomTarget();
@@ -57,6 +57,7 @@ class Target: public Runnable {
         this->testButtonPin = this->infra.getPin();
         pinMode(this->testButtonPin, INPUT_PULLUP);
       #endif
+
       this->state = UP;
     }
 
@@ -83,8 +84,7 @@ class Target: public Runnable {
             rgb.green();
             gunShot = infra.getShot();
             if (gunShot || digitalRead(testButtonPin) == LOW) {
-              Serial.print("Gun " + String(gunShot) + " shot target " + String(this->targetId) + " - ");
-              Serial.println("Hit");
+              Serial.println("Target " + String(this->targetId) + " Hit by player " + String(gunShot));
               rgb.red();
               this->state = DROPPED;
               servo.drop();
