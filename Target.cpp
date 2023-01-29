@@ -33,7 +33,11 @@ class Target: public Runnable {
         servo(servoInstance),
         laser(laserInstance),
         rgb(rgbInstance),
-        infra(infraInstance) {
+        infra(infraInstance)
+      {
+        // Increase global counter;
+        targetCount++;
+        this->targetId = targetCount;
     }
 
     boolean isReady() {
@@ -50,7 +54,6 @@ class Target: public Runnable {
         this->testButtonPin = this->infra.getPin();
         pinMode(this->testButtonPin, INPUT_PULLUP);
       #endif
-
       this->ready = 1;
     }
 

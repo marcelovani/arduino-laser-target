@@ -17,13 +17,11 @@ class Servos: public Runnable {
 
     void setup() {
       servo.attach(pin);
-      // @todo make this configurable.
-      this->start_position = 160;
-      this->drop_position = 90;
-      // Timer delay between 10 and 30 seconds.
-      this->timer_delay = 10 + rand() % 20;
-      // Debugging
-      this->timer_delay = 5;
+      // @todo add offset configuration for each target
+      this->start_position = targetStartPosition;
+      this->drop_position = targetDropPosition;
+      // Timer delay between 5 and 35 seconds.
+      this->timer_delay = 5 + rand() % targetStartDelay;
       this->reset();
     }
 
@@ -39,8 +37,8 @@ class Servos: public Runnable {
     void drop() {
       this->position = this->drop_position;
       this->send();
-      // temp this->timerOnStart(10 + rand() % 20);
-      this->timerOnStart(5 + rand() % 5);
+      // Timer delay between 5 and 35 seconds.
+      this->timerOnStart(5 + rand() % targetDropDelay);
     }
 
     void send() {
