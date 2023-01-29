@@ -5,7 +5,7 @@
 byte targetCount = 0;
 
 // Global variable to make sure only one target can receive shots at a time.
-byte activeTarget = 1;// fix this random(targetCount + 1);
+byte activeTarget = 0;
 
 // Global configuration for target positions.
 const byte targetStartPosition = 160;

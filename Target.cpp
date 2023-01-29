@@ -10,11 +10,11 @@ class Target: public Runnable {
   private:
     byte gunShot;
 
-    void randomTarget() {
+    void pickRandomTarget() {
       Serial.println("Active target " + String(activeTarget));
       activeTarget = random(targetCount) + 1;
       if (activeTarget > targetCount || (activeTarget == this->targetId && !this->ready)) {
-        this->randomTarget();
+        this->pickRandomTarget();
       }
       Serial.println("Active target " + String(activeTarget));
     }
@@ -61,6 +61,10 @@ class Target: public Runnable {
       // Update ready status. @todo we dont need to associate this, we can get status directy in isReady()
       this->ready = servo.isOn();
 
+      if (activeTarget == 0) {
+        this->pickRandomTarget();
+      }
+
       // Check for shots.
       if (activeTarget == this->targetId) {
         if (this->ready) {
@@ -73,9 +77,7 @@ class Target: public Runnable {
             rgb.red();
             this->ready = 0;
             servo.drop();
-            // Force TargetRandomizer to pick another target.
-            //activeTarget = 0;
-            this->randomTarget();
+            activeTarget = 0;
           }
         }
         else {
