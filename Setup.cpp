@@ -19,13 +19,13 @@
     Laser laser1(12);
     RgbLed rgb1(10, 9, 8);
     Infra ir1(7);
-    Target target1(1, 11, laser1, rgb1, servo1, ir1);
+    Target target1(1, laser1, rgb1, servo1, ir1);
 
     Servos servo2(30);
     Laser laser2(31);
     RgbLed rgb2(34, 35, 38);
     Infra ir2(39);
-    Target target2(2, 5, laser2, rgb2, servo2, ir2);
+    Target target2(2, laser2, rgb2, servo2, ir2);
 
     // Servos servo3(22);
     // Laser laser3(23);

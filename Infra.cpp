@@ -57,6 +57,10 @@ class Infra: public Runnable {
     void setup() {
     }
 
+    byte getPin() {
+      return this->pin;
+    }
+
     byte getShot() {
       // Checks received an IR signal
       #ifdef INFRA_ENABLED

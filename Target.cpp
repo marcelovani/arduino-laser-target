@@ -1,9 +1,9 @@
 class Target: public Runnable {
-    const byte brakeSensePin;
     Laser &laser;
     RgbLed &rgb;
     Servos &servo;
     Infra &infra;
+    byte testButtonPin;
     byte targetId;
     byte ready;
 
@@ -24,7 +24,6 @@ class Target: public Runnable {
 
     Target(
         byte id,
-        byte attachToBrakeSense,
         Laser &laserInstance,
         RgbLed &rgbInstance,
         Servos &servoInstance,
@@ -32,14 +31,9 @@ class Target: public Runnable {
       ) :
         targetId(id),
         servo(servoInstance),
-        brakeSensePin(attachToBrakeSense),
         laser(laserInstance),
         rgb(rgbInstance),
         infra(infraInstance) {
-    }
-
-    byte getPin() {
-      return brakeSensePin;
     }
 
     boolean isReady() {
@@ -47,10 +41,16 @@ class Target: public Runnable {
     }
 
     void setup() {
-      pinMode(brakeSensePin, INPUT_PULLUP);
       laser.off();
       rgb.yellow();
       rgb.blink();
+
+      // When infra is not enabled, we use the test button to shoot.
+      #ifndef INFRA_ENABLED
+        this->testButtonPin = this->infra.getPin();
+        pinMode(this->testButtonPin, INPUT_PULLUP);
+      #endif
+
       this->ready = 1;
     }
 
@@ -63,7 +63,7 @@ class Target: public Runnable {
         if (this->ready) {
           rgb.green();
           gunShot = infra.getShot();
-          if (gunShot || digitalRead(brakeSensePin) == LOW) {
+          if (gunShot || digitalRead(testButtonPin) == LOW) {
             Serial.print("Gun " + String(gunShot) + " shot target " + String(this->targetId) + " - ");
             Serial.println("Hit");
             laser.blink();
