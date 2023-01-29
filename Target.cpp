@@ -23,13 +23,11 @@ class Target: public Runnable {
     Target() {}
 
     Target(
-        byte id,
         Laser &laserInstance,
         RgbLed &rgbInstance,
         Servos &servoInstance,
         Infra &infraInstance
       ) :
-        targetId(id),
         servo(servoInstance),
         laser(laserInstance),
         rgb(rgbInstance),

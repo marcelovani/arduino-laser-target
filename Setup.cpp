@@ -19,19 +19,19 @@
     Laser laser1(12);
     RgbLed rgb1(10, 9, 8);
     Infra ir1(7);
-    Target target1(9, laser1, rgb1, servo1, ir1);
+    Target target1(laser1, rgb1, servo1, ir1);
 
     Servos servo2(30);
     Laser laser2(31);
     RgbLed rgb2(34, 35, 38);
     Infra ir2(39);
-    Target target2(8, laser2, rgb2, servo2, ir2);
+    Target target2(laser2, rgb2, servo2, ir2);
 
     Servos servo3(40);
     Laser laser3(41);
     RgbLed rgb3(42, 43, 44);
     Infra ir3(45);
-    Target target3(7, laser3, rgb3, servo3, ir3);
+    Target target3(laser3, rgb3, servo3, ir3);
 #endif
 
 void setup() {
