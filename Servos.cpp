@@ -20,7 +20,7 @@ class Servos: public Runnable {
       // @todo add offset configuration for each target
       this->start_position = targetStartPosition;
       this->drop_position = targetDropPosition;
-      // Timer delay between 5 and 35 seconds.
+      // Timer delay between 5 and 35 seconds. @todo implement this.
       this->timer_delay = 5 + rand() % targetStartDelay;
       this->reset();
     }

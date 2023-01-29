@@ -13,11 +13,11 @@ const byte targetDropPosition = 90;
 
 #ifdef ON_EMULATOR
   // Emulator configuration.
-  const unsigned long targetStartDelay = 1;
-  const unsigned long targetDropDelay = 1;
+  const unsigned long targetStartDelay = 10;
+  const unsigned long targetDropDelay = 10;
 #else
   #define INFRA_ENABLED
   // Used to determine the delay to start and drop the target.
-  unsigned long targetStartDelay = 30;
-  unsigned long targetDropDelay = 30;
+  unsigned long targetStartDelay = 20;
+  unsigned long targetDropDelay = 20;
 #endif
