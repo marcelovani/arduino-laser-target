@@ -21,6 +21,6 @@ class Laser: public Runnable {
     }
 
     void blink() {
-        led.blink(200, 400, 5);
+        led.blink(200, 400, 2);
     }
 };
