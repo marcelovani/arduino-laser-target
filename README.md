@@ -25,3 +25,4 @@ emulators (links below), we use a script to combine all files into one file i.e.
 
 <img width="1124" alt="Tinkercad electronics" src="https://user-images.githubusercontent.com/2162363/215312438-251dfe73-0eaf-4d4a-b7e8-b2f36ff1289d.png">
 
+More details on this Readme https://github.com/marcelovani/arduino-laser-target/blob/master/Electronics/Multivibrator/Readme.md
