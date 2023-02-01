@@ -17,6 +17,7 @@ const byte targetDropPosition = 90;
   const unsigned long targetDropDelay = 10;
 #else
   #define INFRA_ENABLED
+  #define MP3_PLAYER_ENABLED
   // Used to determine the delay to start and drop the target.
   unsigned long targetStartDelay = 20;
   unsigned long targetDropDelay = 20;
