@@ -102,7 +102,6 @@ class Target: public Runnable {
           break;
 
         case READY:
-          Serial.println("Target id: " + String(this->targetId));
           if (activeTarget == this->targetId) {
             rgb.green();
             this->gunShot = infra.getShot();
