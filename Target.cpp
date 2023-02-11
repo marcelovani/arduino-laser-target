@@ -13,7 +13,7 @@ class Target: public Runnable {
     } state;
 
   private:
-    byte gunShot;
+    unsigned char gunShot;
 
     void pickRandomTarget() {
       byte currentTarget;
@@ -56,21 +56,30 @@ class Target: public Runnable {
     }
 
     void setup() {
+      this->state = DROPPED;
+
       laser.off();
       rgb.yellow();
-      rgb.blink();
+      // rgb.blink();
 
       // When infra is not enabled, we use the test button to shoot.
       #ifndef INFRA_ENABLED
         this->testButtonPin = this->infra.getPin();
         pinMode(this->testButtonPin, INPUT_PULLUP);
       #endif
+    }
 
-      this->state = UP;
+    bool testButtonClicked() {
+      #ifndef INFRA_ENABLED
+        return digitalRead(testButtonPin) == LOW;
+      #endif
+
+      return false;
     }
 
     void loop() {
       if (activeTarget == 0) {
+        Serial.println("Active target " + String(activeTarget));
         this->pickRandomTarget();
       }
 
@@ -83,16 +92,22 @@ class Target: public Runnable {
           break;
 
         case UP:
-          laser.blink();
-          this->state = READY;
+          if (activeTarget == this->targetId) {
+            laser.blink();
+            this->state = READY;
+          }
+          else {
+            rgb.blue();
+          }
           break;
 
         case READY:
+          Serial.println("Target id: " + String(this->targetId));
           if (activeTarget == this->targetId) {
             rgb.green();
-            gunShot = infra.getShot();
-            if (gunShot || digitalRead(testButtonPin) == LOW) {
-              Serial.println("Target " + String(this->targetId) + " Hit by player " + String(gunShot));
+            this->gunShot = infra.getShot();
+            if (this->gunShot >  0 || this->testButtonClicked()) {
+              Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
               rgb.red();
               this->state = DROPPED;
               servo.drop();
