@@ -63,13 +63,13 @@ class RgbLed: public Runnable {
 
     void blink() {
         if (rLed.isOn()) {
-            rLed.blink(100, 500, 5);
+            rLed.blink(100, 400, 3);
         }
         if (gLed.isOn()) {
-            gLed.blink(100, 500, 5);
+            gLed.blink(100, 400, 3);
         }
         if (bLed.isOn()) {
-            bLed.blink(100, 500, 5);
+            bLed.blink(100, 400, 3);
         }
     }
 };
