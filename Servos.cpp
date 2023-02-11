@@ -20,9 +20,11 @@ class Servos: public Runnable {
       // @todo add offset configuration for each target
       this->start_position = targetStartPosition;
       this->drop_position = targetDropPosition;
-      // Timer delay between 5 and 35 seconds. @todo implement this.
-      this->timer_delay = 5 + rand() % targetStartDelay;
-      this->reset();
+      // Start dropped.
+      this->position = this->drop_position;
+      this->send();
+      // Timer delay to start between 5 and 15 seconds.
+      this->timerOnStart(5 + rand() % targetStartDelay);
     }
 
     void loop() {
@@ -53,7 +55,7 @@ class Servos: public Runnable {
     }
 
     /**
-     * Start a timer to reset the servo position.
+     * Timer to reset the servo position.
      */
     void timerOnStart(unsigned long _interval)
     {
@@ -67,6 +69,7 @@ class Servos: public Runnable {
      */
     void timerLoop() {
       this->_timerOn.run();
+      // Check if its time to reset.
       if (!this->_timerOn.isRunning()) {
         this->reset();
       }
