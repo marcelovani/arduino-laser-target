@@ -22,16 +22,21 @@ class Target: public Runnable {
       randomSeed(analogRead(0));
       activeTarget = random(targetCount) + 1;
       // Validate.
-      if (activeTarget == currentTarget) {
-        this->pickRandomTarget();
+      if (activeTarget == currentTarget && targetCount > activeTarget) {
+        activeTarget++;
       }
       if (activeTarget > targetCount) {
-        this->pickRandomTarget();
+        activeTarget = 0;
       }
-      if (activeTarget == this->targetId && !this->state != READY) {
-        this->pickRandomTarget();
+      if (disabledTargets[activeTarget]) {
+        activeTarget = 0;
       }
-      Serial.println("Active target " + String(activeTarget));
+      if (activeTarget == this->targetId && this->state == DROPPED) {
+        activeTarget = 0;
+      }
+      if (activeTarget > 0) {
+        Serial.println("Active target " + String(activeTarget));
+      }
     }
 
   public:
@@ -77,43 +82,69 @@ class Target: public Runnable {
       return false;
     }
 
+    void disable() {
+      disabledTargets[this->targetId] = true;
+      rgb.off();
+      Serial.println("Target " + String(this->targetId) + " disabled");
+    }
+
+    boolean isDisabled() {
+      return disabledTargets[this->targetId] == true;
+    }
+
     void loop() {
-      if (activeTarget == 0) {
-        Serial.println("Active target " + String(activeTarget));
-        this->pickRandomTarget();
+      // When infra is not working correctly or servo is not available, change target.
+      if (infra.isDisabled() && !this->isDisabled()) {
+        this->disable();
+        activeTarget = 0;
       }
 
-      switch (this->state) {
-        case DROPPED:
-          rgb.red();
-          if (servo.isOn()) {
-            this->state = UP;
-          }
-          break;
-
-        case UP:
-          if (activeTarget == this->targetId) {
-            laser.blink();
-            this->state = READY;
-          }
-          else {
-            rgb.blue();
-          }
-          break;
-
-        case READY:
-          if (activeTarget == this->targetId) {
-            rgb.green();
-            this->gunShot = infra.getShot();
-            if (this->gunShot >  0 || this->testButtonClicked()) {
-              Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
-              rgb.red();
-              this->state = DROPPED;
-              servo.drop();
-              this->pickRandomTarget();
+      if (!this->isDisabled()) {
+        switch (this->state) {
+          case DROPPED:
+            rgb.red();
+            if (servo.isOn()) {
+              this->state = UP;
             }
-          }
-          break;
+            break;
+
+          case UP:
+            if (activeTarget == this->targetId) {
+              laser.on();
+              delay(200);
+              laser.off();
+              delay(200);
+              laser.on();
+              delay(200);
+              laser.off();
+              delay(200);
+              //laser.blink();
+              this->state = READY;
+            }
+            else {
+              rgb.blue();
+            }
+            break;
+
+          case READY:
+            if (activeTarget == this->targetId) {
+              rgb.green();
+              this->gunShot = infra.getShot();
+              if (this->gunShot >  0 || this->testButtonClicked()) {
+                Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
+                rgb.red();
+                this->state = DROPPED;
+                delay(100);
+                servo.drop();
+                this->pickRandomTarget();
+              }
+            }
+            break;
+        }
+      }
+
+      if (activeTarget == 0) {
+        this->pickRandomTarget();
       }
     }
 };

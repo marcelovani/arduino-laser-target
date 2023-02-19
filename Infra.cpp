@@ -19,6 +19,10 @@ class Infra: public Runnable {
     #endif
 
   private:
+    // Count bad readings.
+    byte bad_readings;
+    const byte bad_readings_limit = 5;
+
     unsigned char translateIR()
     {
       this->player = 0;
@@ -27,8 +31,7 @@ class Infra: public Runnable {
 
         // Ignore noise and bad readings.
         if (receiver.getDataLength() < 17) {
-          // Serial.println("ERROR: IR too short: " + String(receiver.getDataLength()));
-          // Serial.println("#1 Player: " + String(this->player));
+          Serial.println("IR " + String(this->pin) + " Error: too short: " + String(receiver.getDataLength()));
           return 0;
         }
 
@@ -37,7 +40,14 @@ class Infra: public Runnable {
         // Use data length to get the duration of the 2th position from the end.
         d2 = receiver.getDuration(receiver.getDataLength() - 2);
 
-        // Serial.println("Data points " + String(d1) + ", " + String(d2));
+        // Ignore noise and bad readings.
+        if (d1 > t * 3 || d2 > t * 3) {
+          Serial.println("IR " + String(this->pin) + " ERROR: Bad code: " + String(d1) + " " + String(d2));
+          this->bad_readings++;
+          return 0;
+        }
+
+        Serial.println("Data points " + String(d1) + ", " + String(d2));
 
         if (d1 > t) {
           if (d2 < t) {
@@ -66,6 +76,10 @@ class Infra: public Runnable {
 
     void setup() {}
 
+    void reset() {
+      this->bad_readings = 0;
+    }
+
     byte getPin() {
       return this->pin;
     }
@@ -80,6 +94,10 @@ class Infra: public Runnable {
       #endif
 
       return 0;
+    }
+
+    bool isDisabled() {
+      return this->bad_readings > this->bad_readings_limit;
     }
 
     void loop() {

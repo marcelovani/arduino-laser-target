@@ -10,6 +10,7 @@ byte activeTarget = 0;
 // Global configuration for target positions.
 const byte targetStartPosition = 160;
 const byte targetDropPosition = 90;
+int disabledTargets[7];
 
 #ifdef ON_EMULATOR
   // Emulator configuration.
