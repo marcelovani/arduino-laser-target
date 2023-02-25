@@ -111,20 +111,15 @@ Infra    ir5(pins[5][4]);
 Laser laser5(pins[5][6]);
 RgbLed  rgb5(pins[5][8], pins[5][3], pins[5][5]);
 
-//   Arm     arm6(pins[6][2]);
-//   Infra    ir6(pins[6][4]);
-//   Laser laser6(pins[6][6]);
-//   RgbLed  rgb6(pins[6][8], pins[6][3], pins[6][5]);
+Arm     arm6(pins[6][2]);
+Infra    ir6(pins[6][4]);
+Laser laser6(pins[6][6]);
+RgbLed  rgb6(pins[6][8], pins[6][3], pins[6][5]);
 
-//   Arm     arm7(pins[7][2]);
-//   Infra    ir7(pins[7][4]);
-//   Laser laser7(pins[7][6]);
-//   RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
-
-//   Arm     arm8(pins[8][2]);
-//   Infra    ir8(pins[8][4]);
-//   Laser laser8(pins[8][6]);
-//   RgbLed  rgb8(pins[8][8], pins[8][3], pins[8][5]);
+Arm     arm7(pins[7][2]);
+Infra    ir7(pins[7][4]);
+Laser laser7(pins[7][6]);
+RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
 
 // Create instance of the target randomizer.
 TargetRandomizer randomizer;
@@ -137,12 +132,10 @@ void setup() {
   targets[2] = new Target(laser2, rgb2, arm2, ir2);
   targets[3] = new Target(laser3, rgb3, arm3, ir3);
   targets[4] = new Target(laser4, rgb4, arm4, ir4);
-//   targets[4]->disable();
   targets[5] = new Target(laser5, rgb5, arm5, ir5);
-//   targets[5]->disable();
-//   targets[6] = new Target(laser6, rgb6, arm6, ir6);
+  targets[6] = new Target(laser6, rgb6, arm6, ir6);
+  // @todo try to understand why this breaks randomization on emulator when this is enabled
 //   targets[7] = new Target(laser7, rgb7, arm7, ir7);
-//   targets[8] = new Target(laser8, rgb8, arm8, ir8);
 
   Runnable::setupAll();
 }

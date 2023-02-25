@@ -23,7 +23,6 @@ class TargetRandomizer: public Runnable {
 
       // Try not to select same target.
       if (nextTarget == activeTarget && targetCount > nextTarget) {
-        // Serial.print(" EQUAL ");
         nextTarget++;
       }
 

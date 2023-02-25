@@ -43,14 +43,18 @@ class Target: public Runnable {
 
       // When infra is not enabled, we use the test button to shoot.
       #ifndef INFRA_ENABLED
-        this->testButtonPin = this->infra.getPin();
-        pinMode(this->testButtonPin, INPUT_PULLUP);
+        if (this->infra.getPin() > 0) {
+          this->testButtonPin = this->infra.getPin();
+          pinMode(this->testButtonPin, INPUT_PULLUP);
+        }
       #endif
     }
 
     bool testButtonClicked() {
       #ifndef INFRA_ENABLED
-        return digitalRead(testButtonPin) == LOW;
+        if (this->infra.getPin() > 0) {
+          return digitalRead(this->testButtonPin) == LOW;
+        }
       #endif
 
       return false;

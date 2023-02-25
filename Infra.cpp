@@ -97,7 +97,7 @@ class Infra: public Runnable {
     }
 
     bool isDisabled() {
-      return this->bad_readings > this->bad_readings_limit;
+      return this->getPin() == 0 || this->bad_readings > this->bad_readings_limit;
     }
 
     void loop() {

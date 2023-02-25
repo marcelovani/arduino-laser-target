@@ -11,6 +11,10 @@ class Button: public Runnable {
     }
 
     void setup() {
+      if (pin == 0) {
+        return;
+      }
+
       pinMode(pin, INPUT_PULLUP);
       state = HIGH;
     }
