@@ -1,41 +1,6 @@
 // See Board definitions https://github.com/Arduino-CI/arduino_ci/issues/89
 
 #if defined(__ARDUINO_AVR_UNO__) || defined(ARDUINO_AVR_UNO)
-    //@todo update this
-    Servos servo1(9);
-    Laser laser1(13);
-    RgbLed rgb1(12, 10, 11);
-    Infra receiver(15);//todo
-    Target target1(1, 8, laser1, rgb1, servo1);
-
-    Servos servo2(2);
-    Laser laser2(6);
-    RgbLed rgb2(5, 3, 4);
-    Infra receiver(15);//todo
-    Target target2(2, 7, laser2, rgb2, servo2);
-
-#endif
-
-#if defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_NANO)
-    Servos servo1(12);
-    Laser laser1(2);
-    RgbLed rgb1(A4, A5, A6);
-    Infra ir1(5);
-    Target target1(laser1, rgb1, servo1, ir1);
-
-    Servos servo2(11);
-    Laser laser2(A7);
-    RgbLed rgb2(A1, A2, A3);
-    Infra ir2(6);
-    Target target2(laser2, rgb2, servo2, ir2);
-#endif
-
-#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-
-    // @todo use include for this file and in the port_test.ino file.
-    const int PORTS = 7;
-    const int PINS = 8;
-
     // Mapping for 7 Ports vs 8 Pins each port
     // Brown            - 1 (Ground)
     // White/Brown      - 2 (Servo)
@@ -45,77 +10,139 @@
     // White/Green      - 6 (Laser)
     // Orange           - 7 (+5v)
     // White/Orange     - 8 (RGB Red)
-    int pins[PORTS+1][PINS+1] = {
+    int pins[NUM_PORTS+1][PINS+1] = {
         //     1   2   3   4   5   6   7   8    <- Wires
         { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
-        { 00, 00, 03, 16, 02, 17, 15, 00, 14 }, // 1 -> ok
-        { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
-        { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
-        { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
-        { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
-        { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
-        { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
-    };
+        { 00, 00,  8, 11,  9, 10, 13, 00, 12 }, // 1 -> ok
+        { 00, 00, 30, 35, 39, 38, 31, 00, 34 }, // 2 -> ok
+        { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 3 -> ok
+        { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 4 -> ok
+        { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 5 -> ok
+        { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 6 -> ok
+        { 00, 00, 00, 00, 00, 00, 00, 00, 00 }  // 7 -> ok
+        };
+#endif
 
-    // @todo make this dynamically
+#if defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_NANO)
+    //@todo update this using maping
+    // Arm arm1(12);
+    // Laser laser1(2);
+    // RgbLed rgb1(A4, A5, A6);
+    // Infra ir1(5);
+    // Target target1(laser1, rgb1, arm1, ir1);
+
+    // Arm arm2(11);
+    // Laser laser2(A7);
+    // RgbLed rgb2(A1, A2, A3);
+    // Infra ir2(6);
+    // Target target2(laser2, rgb2, arm2, ir2);
+#endif
+
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
     #ifdef ON_EMULATOR
-        Servos servo1(13);
-        Laser laser1(12);
-        RgbLed rgb1(10,9,8);
-        Infra ir1(7);
-        Target target1(laser1, rgb1, servo1, ir1);
-
-        Servos servo4(26);
-        Laser laser4(22);
-        RgbLed rgb4(23, 25, 24);
-        Infra ir4(27);
-        Target target4(laser4, rgb4, servo4, ir4);
-
-        // Servos servo5(37);
-        // Laser laser5(28);
-        // RgbLed rgb5(29, 32, 33);
-        // Infra ir5(36);
-        // Target target5(laser5, rgb5, servo5, ir5);
-
-        // Servos servo6(51);
-        // Laser laser6(46);
-        // RgbLed rgb6(47, 48, 49);
-        // Infra ir6(50);
-        // Target target6(laser6, rgb6, servo6, ir6);
-
-        Servos servo9(3);
-        Laser laser9(4);
-        RgbLed rgb9(53, 52, 2);
-        Infra ir9(5);
-        Target target9(laser9, rgb9, servo9, ir9);
+        // Mapping for 7 Ports vs 8 Pins each port
+        // Brown            - 1 (Ground)
+        // White/Brown      - 2 (Servo)
+        // Green            - 3 (RGB Green)
+        // White/Blue       - 4 (IR)
+        // Blue             - 5 (RGB Blue)
+        // White/Green      - 6 (Laser)
+        // Orange           - 7 (+5v)
+        // White/Orange     - 8 (RGB Red)
+        int pins[NUM_PORTS+1][PINS+1] = {
+            //     1   2   3   4   5   6   7   8    <- Wires
+            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
+            { 00, 00, 13,  9,  7,  8, 12, 00, 10 }, // 1 -> ok
+            { 00, 00, 30, 35, 39, 38, 31, 00, 34 }, // 2 -> ok
+            { 00, 00, 40, 43, 45, 44, 41, 00, 42 }, // 3 -> ok
+            { 00, 00, 26, 25, 27, 24, 22, 00, 23 }, // 4 -> ok
+            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 5 -> ok
+            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 6 -> ok
+            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }  // 7 -> ok
+        };
     #else
-        Servos servo1(pins[1][2]);
-        Laser laser1(pins[1][6]);
-        RgbLed rgb1(pins[1][8], pins[1][3], pins[1][5]);
-        Infra ir1(pins[1][4]);
-        Target target1(laser1, rgb1, servo1, ir1);
-
-        // Servos servo2(pins[2][2]);
-        // Laser laser2(pins[2][6]);
-        // RgbLed rgb2(pins[2][8], pins[2][3], pins[2][5]);
-        // Infra ir2(pins[2][4]);
-        // Target target2(laser2, rgb2, servo2, ir2);
-
-        // Servos servo3(pins[3][2]);
-        // Laser laser3(pins[3][6]);
-        // RgbLed rgb3(pins[3][8], pins[3][3], pins[3][5]);
-        // Infra ir3(pins[3][4]);
-        // Target target3(laser3, rgb3, servo3, ir3);
-
-        Servos servo4(pins[4][2]);
-        Laser laser4(pins[4][6]);
-        RgbLed rgb4(pins[4][8], pins[4][3], pins[4][5]);
-        Infra ir4(pins[4][4]);
-        Target target4(laser4, rgb4, servo4, ir4);
+        // Mapping for 7 Ports vs 8 Pins each port
+        // Brown            - 1 (Ground)
+        // White/Brown      - 2 (Servo)
+        // Green            - 3 (RGB Green)
+        // White/Blue       - 4 (IR)
+        // Blue             - 5 (RGB Blue)
+        // White/Green      - 6 (Laser)
+        // Orange           - 7 (+5v)
+        // White/Orange     - 8 (RGB Red)
+        int pins[NUM_PORTS+1][PINS+1] = {
+            //     1   2   3   4   5   6   7   8    <- Wires
+            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
+            { 00, 00,  3, 16,  2, 17, 15, 00, 14 }, // 1 -> ok
+            { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
+            { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
+            { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
+            { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
+            { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
+            { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
+        };
     #endif
 #endif
 
+// Create all device instances.
+// @todo use array and loop
+Arm     arm1(pins[1][2]);
+Infra    ir1(pins[1][4]);
+Laser laser1(pins[1][6]);
+RgbLed  rgb1(pins[1][8], pins[1][3], pins[1][5]);
+
+Arm     arm2(pins[2][2]);
+Infra    ir2(pins[2][4]);
+Laser laser2(pins[2][6]);
+RgbLed  rgb2(pins[2][8], pins[2][3], pins[2][5]);
+
+Arm     arm3(pins[3][2]);
+Infra    ir3(pins[3][4]);
+Laser laser3(pins[3][6]);
+RgbLed  rgb3(pins[3][8], pins[3][3], pins[3][5]);
+
+Arm     arm4(pins[4][2]);
+Infra    ir4(pins[4][4]);
+Laser laser4(pins[4][6]);
+RgbLed  rgb4(pins[4][8], pins[4][3], pins[4][5]);
+
+Arm     arm5(pins[5][2]);
+Infra    ir5(pins[5][4]);
+Laser laser5(pins[5][6]);
+RgbLed  rgb5(pins[5][8], pins[5][3], pins[5][5]);
+
+//   Arm     arm6(pins[6][2]);
+//   Infra    ir6(pins[6][4]);
+//   Laser laser6(pins[6][6]);
+//   RgbLed  rgb6(pins[6][8], pins[6][3], pins[6][5]);
+
+//   Arm     arm7(pins[7][2]);
+//   Infra    ir7(pins[7][4]);
+//   Laser laser7(pins[7][6]);
+//   RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
+
+//   Arm     arm8(pins[8][2]);
+//   Infra    ir8(pins[8][4]);
+//   Laser laser8(pins[8][6]);
+//   RgbLed  rgb8(pins[8][8], pins[8][3], pins[8][5]);
+
+// Create instance of the target randomizer.
+TargetRandomizer randomizer;
+
 void setup() {
   Serial.begin(9600);
+
+  // Create instances of targets.
+  targets[1] = new Target(laser1, rgb1, arm1, ir1);
+  targets[2] = new Target(laser2, rgb2, arm2, ir2);
+  targets[3] = new Target(laser3, rgb3, arm3, ir3);
+  targets[4] = new Target(laser4, rgb4, arm4, ir4);
+//   targets[4]->disable();
+  targets[5] = new Target(laser5, rgb5, arm5, ir5);
+//   targets[5]->disable();
+//   targets[6] = new Target(laser6, rgb6, arm6, ir6);
+//   targets[7] = new Target(laser7, rgb7, arm7, ir7);
+//   targets[8] = new Target(laser8, rgb8, arm8, ir8);
+
   Runnable::setupAll();
 }

@@ -1,8 +1,8 @@
 #include <Servo.h>
 
-class Servos: public Runnable {
+class Arm: public Runnable {
   byte pin;
-  Servo servo;
+  Servo arm;
 
   private:
     MillisTimer _timerOn;
@@ -11,51 +11,15 @@ class Servos: public Runnable {
     byte drop_position;
     unsigned long timer_delay;
 
-  public:
-    Servos(byte pin) : pin(pin) {
-    }
-
-    void setup() {
-      servo.attach(pin);
-      // @todo add offset configuration for each target
-      this->start_position = targetStartPosition;
-      this->drop_position = targetDropPosition;
-      // Start dropped.
-      this->position = this->drop_position;
-      this->send();
-      // Timer delay to start between 5 and 15 seconds.
-      this->timerOnStart(5 + rand() % targetStartDelay);
-    }
-
-    void loop() {
-      this->timerLoop();
-    }
-
-    void reset() {
-      this->position = this->start_position;
-      this->send();
-    }
-
-    void drop() {
-      this->position = this->drop_position;
-      this->send();
-      // Timer delay between 5 and 35 seconds.
-      this->timerOnStart(5 + rand() % targetDropDelay);
-    }
-
-    void send() {
-      servo.write(this->position);
-    }
-
     /**
-     * Used to check if the target is up or dropped.
+     * Send command to arm.
      */
-    boolean isOn() {
-      return this->position == this->start_position;
+    void send() {
+      arm.write(this->position);
     }
 
     /**
-     * Timer to reset the servo position.
+     * Timer to reset the arm position.
      */
     void timerOnStart(unsigned long _interval)
     {
@@ -73,5 +37,56 @@ class Servos: public Runnable {
       if (!this->_timerOn.isRunning()) {
         this->reset();
       }
+    }
+
+  public:
+    Arm() {}
+
+    Arm(byte pin) : pin(pin) {
+    }
+
+    void setup() {
+      if (pin == 0) {
+        return;
+      }
+
+      arm.attach(pin);
+      // @todo add offset configuration for each target
+      this->start_position = targetStartPosition;
+      this->drop_position = targetDropPosition;
+      // Start dropped.
+      this->position = this->drop_position;
+      this->send();
+      // Timer delay to start between 5 and 15 seconds.
+      this->timerOnStart(5 + rand() % targetStartDelay);
+    }
+
+    void loop() {
+      this->timerLoop();
+    }
+
+    /**
+     * Change the arm to start position. 
+     */
+    void reset() {
+      this->position = this->start_position;
+      this->send();
+    }
+
+    /**
+     * Change the arm to drop position. 
+     */
+    void drop() {
+      this->position = this->drop_position;
+      this->send();
+      // Timer delay between 5 and 35 seconds.
+      this->timerOnStart(5 + rand() % targetDropDelay);
+    }
+
+    /**
+     * Used to check if the target is up or dropped.
+     */
+    boolean isOn() {
+      return this->position == this->start_position;
     }
 };

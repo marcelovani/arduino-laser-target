@@ -12,13 +12,10 @@
 #include "RgbLed.cpp"
 // #include "Button.cpp"
 // #include "LedControlButton.cpp"
-#include "Servos.cpp"
+#include "Arm.cpp"
 #include "Target.cpp"
+#include "TargetRandomizer.cpp"
 #include "Setup.cpp"
-//#include "TargetRandomizer.cpp"
-
-// Create instance of the target randomizer.
-//TargetRandomizer randomizer(2);
 
 void loop() {
   Runnable::loopAll();

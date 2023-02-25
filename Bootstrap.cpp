@@ -1,6 +1,10 @@
 // Uncomment to test on emulators.
 // #define ON_EMULATOR
 
+// @todo use include for this file and in the port_test.ino file.
+const byte NUM_PORTS = 8;
+const byte PINS = 8;
+
 // Manual set number of targets. @todo use arrays and make this dynamic
 byte targetCount = 0;
 
@@ -10,7 +14,6 @@ byte activeTarget = 0;
 // Global configuration for target positions.
 const byte targetStartPosition = 160;
 const byte targetDropPosition = 90;
-int disabledTargets[7];
 
 #ifdef ON_EMULATOR
   // Emulator configuration.

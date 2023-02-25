@@ -15,6 +15,10 @@ class Led: public Runnable {
     }
 
     void setup() {
+      if (pin == 0) {
+        return;
+      }
+
       status = LOW;
       pinMode(pin, OUTPUT);
       send();

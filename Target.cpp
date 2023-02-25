@@ -1,52 +1,31 @@
 class Target: public Runnable {
     Laser &laser;
     RgbLed &rgb;
-    Servos &servo;
+    Arm &arm;
     Infra &infra;
     byte testButtonPin;
     byte targetId;
 
     enum State {
-      DROPPED = 0,
-      UP = 1,
-      READY = 2
+      DISABLED = 0,
+      DROPPED = 1,
+      UP = 2,
+      READY = 3
     } state;
 
   private:
     unsigned char gunShot;
 
-    void pickRandomTarget() {
-      byte currentTarget;
-      currentTarget = activeTarget;
-      // Randomize.
-      randomSeed(analogRead(0));
-      activeTarget = random(targetCount) + 1;
-      // Validate.
-      if (activeTarget == currentTarget && targetCount > activeTarget) {
-        activeTarget++;
-      }
-      if (activeTarget > targetCount) {
-        activeTarget = 0;
-      }
-      if (disabledTargets[activeTarget]) {
-        activeTarget = 0;
-      }
-      if (activeTarget == this->targetId && this->state == DROPPED) {
-        activeTarget = 0;
-      }
-      if (activeTarget > 0) {
-        Serial.println("Active target " + String(activeTarget));
-      }
-    }
-
   public:
+    Target() {}
+
     Target(
         Laser &laserInstance,
         RgbLed &rgbInstance,
-        Servos &servoInstance,
+        Arm &armInstance,
         Infra &infraInstance
       ) :
-        servo(servoInstance),
+        arm(armInstance),
         laser(laserInstance),
         rgb(rgbInstance),
         infra(infraInstance)
@@ -56,16 +35,11 @@ class Target: public Runnable {
         this->targetId = targetCount;
     }
 
-    boolean isReady() {
-      return this->state == READY;
-    }
-
     void setup() {
       this->state = DROPPED;
 
       laser.off();
-      rgb.yellow();
-      // rgb.blink();
+      rgb.blue();
 
       // When infra is not enabled, we use the test button to shoot.
       #ifndef INFRA_ENABLED
@@ -83,17 +57,25 @@ class Target: public Runnable {
     }
 
     void disable() {
-      disabledTargets[this->targetId] = true;
+      this->state = DISABLED;
       rgb.off();
-      Serial.println("Target " + String(this->targetId) + " disabled");
+      arm.reset();
     }
 
     boolean isDisabled() {
-      return disabledTargets[this->targetId] == true;
+      return this->state == DISABLED;
+    }
+
+    boolean isReady() {
+      return this->state == READY;
+    }
+
+    boolean isUp() {
+      return this->state == UP;
     }
 
     void loop() {
-      // When infra is not working correctly or servo is not available, change target.
+      // When infra is not working correctly or arm is not available, disable and change target.
       if (infra.isDisabled() && !this->isDisabled()) {
         this->disable();
         activeTarget = 0;
@@ -102,8 +84,8 @@ class Target: public Runnable {
       if (!this->isDisabled()) {
         switch (this->state) {
           case DROPPED:
-            rgb.red();
-            if (servo.isOn()) {
+            rgb.off();
+            if (arm.isOn()) {
               this->state = UP;
             }
             break;
@@ -135,16 +117,15 @@ class Target: public Runnable {
                 rgb.red();
                 this->state = DROPPED;
                 delay(100);
-                servo.drop();
-                this->pickRandomTarget();
+                arm.drop();
+                activeTarget = 0;
               }
+            }
+            else {
+              this->state = UP;
             }
             break;
         }
-      }
-
-      if (activeTarget == 0) {
-        this->pickRandomTarget();
       }
     }
 };
