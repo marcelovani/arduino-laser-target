@@ -11,10 +11,11 @@ class TargetRandomizer: public Runnable {
      */
     void pickRandomTarget() {
       byte nextTarget;
+      byte max = NUM_PORTS - 1;
 
       // Randomize.
       randomSeed(analogRead(0));
-      nextTarget = random(targetCount) + 1;
+      nextTarget = random(NUM_PORTS);
 
       // Check if target is disabled.
       if (this->isTargetDisabled(nextTarget)) {
@@ -22,12 +23,12 @@ class TargetRandomizer: public Runnable {
       }
 
       // Try not to select same target.
-      if (nextTarget == activeTarget && targetCount > nextTarget) {
+      if (nextTarget == activeTarget && max > nextTarget) {
         nextTarget++;
       }
 
       // If value is invalid, disable and pick another one.
-      if (nextTarget > targetCount) {
+      if (nextTarget > max) {
         this->pickRandomTarget();
       }
 

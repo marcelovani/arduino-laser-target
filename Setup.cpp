@@ -39,49 +39,26 @@
 #endif
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
-    #ifdef ON_EMULATOR
-        // Mapping for 7 Ports vs 8 Pins each port
-        // Brown            - 1 (Ground)
-        // White/Brown      - 2 (Servo)
-        // Green            - 3 (RGB Green)
-        // White/Blue       - 4 (IR)
-        // Blue             - 5 (RGB Blue)
-        // White/Green      - 6 (Laser)
-        // Orange           - 7 (+5v)
-        // White/Orange     - 8 (RGB Red)
-        int pins[NUM_PORTS+1][PINS+1] = {
-            //     1   2   3   4   5   6   7   8    <- Wires
-            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
-            { 00, 00, 13,  9,  7,  8, 12, 00, 10 }, // 1 -> ok
-            { 00, 00, 30, 35, 39, 38, 31, 00, 34 }, // 2 -> ok
-            { 00, 00, 40, 43, 45, 44, 41, 00, 42 }, // 3 -> ok
-            { 00, 00, 26, 25, 27, 24, 22, 00, 23 }, // 4 -> ok
-            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 5 -> ok
-            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // 6 -> ok
-            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }  // 7 -> ok
-        };
-    #else
-        // Mapping for 7 Ports vs 8 Pins each port
-        // Brown            - 1 (Ground)
-        // White/Brown      - 2 (Servo)
-        // Green            - 3 (RGB Green)
-        // White/Blue       - 4 (IR)
-        // Blue             - 5 (RGB Blue)
-        // White/Green      - 6 (Laser)
-        // Orange           - 7 (+5v)
-        // White/Orange     - 8 (RGB Red)
-        int pins[NUM_PORTS+1][PINS+1] = {
-            //     1   2   3   4   5   6   7   8    <- Wires
-            { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
-            { 00, 00,  3, 16,  2, 17, 15, 00, 14 }, // 1 -> ok
-            { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
-            { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
-            { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
-            { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
-            { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
-            { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
-        };
-    #endif
+  // Mapping for 7 Ports vs 8 Pins each port
+  // Brown            - 1 (Ground)
+  // White/Brown      - 2 (Servo)
+  // Green            - 3 (RGB Green)
+  // White/Blue       - 4 (IR)
+  // Blue             - 5 (RGB Blue)
+  // White/Green      - 6 (Laser)
+  // Orange           - 7 (+5v)
+  // White/Orange     - 8 (RGB Red)
+  int pins[NUM_PORTS+1][PINS+1] = {
+      //     1   2   3   4   5   6   7   8    <- Wires
+      { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
+      { 00, 00,  3, 16,  2, 17, 15, 00, 14 }, // 1 -> ok
+      { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
+      { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
+      { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
+      { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
+      { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
+      { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
+  };
 #endif
 
 // Create all device instances.
@@ -134,8 +111,7 @@ void setup() {
   targets[4] = new Target(laser4, rgb4, arm4, ir4);
   targets[5] = new Target(laser5, rgb5, arm5, ir5);
   targets[6] = new Target(laser6, rgb6, arm6, ir6);
-  // @todo try to understand why this breaks randomization on emulator when this is enabled
-//   targets[7] = new Target(laser7, rgb7, arm7, ir7);
+  targets[7] = new Target(laser7, rgb7, arm7, ir7);
 
   Runnable::setupAll();
 }
