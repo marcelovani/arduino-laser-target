@@ -4,7 +4,7 @@ class TargetRandomizer: public Runnable {
   private:
     unsigned char gunShot;
     MillisTimer _timerOn;
-    const byte start_delay = 10;
+    const byte start_delay = 5;
 
     /**
      * Logic to select the next available target.
@@ -39,8 +39,13 @@ class TargetRandomizer: public Runnable {
 
       if (activeTarget > 0) {
         Serial.println("Active target " + String(activeTarget));
-        // Timer delay to select a new target in N seconds.
-        this->timerOnStart(this->start_delay);
+        this->_timerOn.stop();
+        // Timer delay to select a new target when there is no shoots.
+        randomSeed(analogRead(0));
+        // @todo reduce delay based on game level.
+        byte seconds = random(5) + this->start_delay;
+        Serial.println("Idle delay " + String(seconds) + "s");
+        this->timerOnStart(seconds);
       }
     }
 
@@ -73,6 +78,7 @@ class TargetRandomizer: public Runnable {
       this->_timerOn.run();
       // Change target when the active target did not receive any shot.
       if (!this->_timerOn.isRunning()) {
+        activeTarget = 0;
         this->pickRandomTarget();
       }
     }
@@ -90,6 +96,17 @@ class TargetRandomizer: public Runnable {
 
       if (activeTarget == 0) {
         this->pickRandomTarget();
+      }
+      else if (activeTarget == 254) {
+        this->_timerOn.stop();
+        // Special code until timer is up and a new target is selected.
+        activeTarget = 255;
+        // Random timer for next target selection.
+        randomSeed(analogRead(0));
+        // @todo reduce delay based on game level.
+        byte seconds = random(5);
+        Serial.println("Random start in " + String(seconds) + "s");
+        this->timerOnStart(seconds);
       }
     }
 };

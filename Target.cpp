@@ -88,9 +88,11 @@ class Target: public Runnable {
       if (!this->isDisabled()) {
         switch (this->state) {
           case DROPPED:
-            rgb.off();
             if (arm.isOn()) {
               this->state = UP;
+            }
+            else {
+              rgb.off();
             }
             break;
 
@@ -108,7 +110,8 @@ class Target: public Runnable {
               this->state = READY;
             }
             else {
-              rgb.blue();
+              // @todo find out why blue turns off when laser is blinking and turn this on again.
+              // rgb.blue();
             }
             break;
 
@@ -122,7 +125,8 @@ class Target: public Runnable {
                 this->state = DROPPED;
                 delay(100);
                 arm.drop();
-                activeTarget = 0;
+                // Special code to add random delay before next target selection.
+                activeTarget = 254;
               }
             }
             else {
