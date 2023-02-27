@@ -102,7 +102,6 @@ RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
 
 // Create instance of the target randomizer.
 TargetRandomizer randomizer;
-Display display(6, 7, 8);
 
 void setup() {
   Serial.begin(9600);
@@ -117,6 +116,4 @@ void setup() {
   targets[7] = new Target(laser7, rgb7, arm7, ir7);
 
   Runnable::setupAll();
-
-  display.splash();
 }

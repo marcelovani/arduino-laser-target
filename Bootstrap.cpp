@@ -22,6 +22,8 @@ enum GameModes {
   TESTING = 2,
 } GameState;
 
+unsigned char scores[3] = {0, 0, 0};
+
 #ifdef ON_EMULATOR
   // Emulator configuration.
   const unsigned long targetStartDelay = 2;
@@ -33,3 +35,5 @@ enum GameModes {
   unsigned long targetStartDelay = 10;
   unsigned long targetDropDelay = 20;
 #endif
+
+#include <Bounce2.h>

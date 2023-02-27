@@ -92,6 +92,10 @@ class TargetRandomizer: public Runnable {
     }
 
     void loop() {
+      if (GameState != PLAYING) {
+        return;
+      }
+
       this->timerLoop();
 
       if (activeTarget == 0) {

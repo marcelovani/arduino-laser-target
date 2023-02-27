@@ -9,7 +9,6 @@
 // Connect SDA -> Port 20 on Arduino Mega
 
 #include "U8glib.h"
-#include <Bounce2.h>
 
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST); // Fast I2C / TWI
 
@@ -32,6 +31,12 @@ class Display: public Runnable {
 
     void _print(u8g_uint_t x, u8g_uint_t y, const char *str) {
       u8g.drawStr(x, y, str);
+    }
+
+    void _print(u8g_uint_t x, u8g_uint_t y, String str) {
+      char charBuf[50];
+      str.toCharArray(charBuf, 50);
+      u8g.drawStr(x, y, charBuf);
     }
 
     void displayMenu() {
@@ -61,6 +66,10 @@ class Display: public Runnable {
               this->_print(10, 25, "> Start Game");
               this->_print(10, 45, "   Test Targets");
               if (buttonPressed()) {
+                scores[0] = 0;
+                scores[1] = 0;
+                scores[2] = 0;
+                displayScores();
                 GameState = PLAYING;
               }
             break;
@@ -80,22 +89,19 @@ class Display: public Runnable {
       u8g.firstPage();
       do {
         this->_print(10, 15, "TEST MODE");
-        if (buttonPressed()) {
-          GameState = MENU;
-        }
       } while ( u8g.nextPage() );
     }
 
-    void displayScores() {
+    void splash() {
       u8g.firstPage();
       do {
-        this->_print(10, 15, "Player 1: 10");
-        this->_print(10, 35, "Player 2: 1");
-        this->_print(10, 55, "Player 3: 0");
-        if (buttonPressed()) {
-          GameState = MENU;
-        }
+        this->_print(1, 15, "LASER TARGET");
+        u8g.drawCircle(64, 40, 20);
+        u8g.drawCircle(64, 40, 14);
+        u8g.drawCircle(64, 40, 9);
+        u8g.drawCircle(64, 40, 3);
       } while ( u8g.nextPage() );
+      delay(3000);
     }
 
   public:
@@ -107,14 +113,14 @@ class Display: public Runnable {
 
     void setup() {
       pinMode(this->encoderClkPin, INPUT);
-      pinMode(encoderDtPin, INPUT);
-      pinMode(encoderBtnPin, INPUT_PULLUP);
+      pinMode(this->encoderDtPin, INPUT);
 
-      bounce.attach(encoderBtnPin, INPUT_PULLUP);
+      bounce.attach(this->encoderBtnPin, INPUT_PULLUP);
       bounce.interval(25);
 
       u8g.setFont(u8g_font_gdb12);
       u8g.setColorIndex(1);
+      this->splash();
     }
 
     void print(u8g_uint_t x, u8g_uint_t y, const char *str) {
@@ -124,16 +130,13 @@ class Display: public Runnable {
       } while ( u8g.nextPage() );
     }
   
-    void splash() {
+    void displayScores() {
       u8g.firstPage();
       do {
-        u8g.drawStr(1, 15, "LASER TARGET");
-        u8g.drawCircle(64, 40, 20);
-        u8g.drawCircle(64, 40, 14);
-        u8g.drawCircle(64, 40, 9);
-        u8g.drawCircle(64, 40, 3);
+        this->_print(10, 15, "Player 1: " + String(scores[0]));
+        this->_print(10, 35, "Player 2: " + String(scores[1]));
+        this->_print(10, 55, "Player 3: " + String(scores[2]));
       } while ( u8g.nextPage() );
-      delay(5000);
     }
 
     void loop() {
@@ -145,12 +148,20 @@ class Display: public Runnable {
           break;
 
         case PLAYING:
-          displayScores();
+          if (buttonPressed()) {
+            GameState = MENU;
+          }
           break;
 
         case TESTING:
           displayTest();
+          if (buttonPressed()) {
+            GameState = MENU;
+          }
           break;
       }
     }
 };
+
+// Create instance of display.
+Display display(6, 7, 8);

@@ -56,7 +56,6 @@ class Target: public Runnable {
           return digitalRead(this->testButtonPin) == LOW;
         }
       #endif
-
       return false;
     }
 
@@ -119,7 +118,7 @@ class Target: public Runnable {
             if (activeTarget == this->targetId) {
               rgb.green();
               this->gunShot = infra.getShot();
-              if (this->gunShot >  0 || this->testButtonClicked()) {
+              if (this->gunShot > 0 || this->testButtonClicked()) {
                 Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
                 rgb.red();
                 this->state = DROPPED;
@@ -127,6 +126,9 @@ class Target: public Runnable {
                 arm.drop();
                 // Special code to add random delay before next target selection.
                 activeTarget = 254;
+                // Update scores;
+                scores[this->gunShot]++;
+                display.displayScores();
               }
             }
             else {
