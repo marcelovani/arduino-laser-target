@@ -78,17 +78,15 @@ class Display: public Runnable {
               this->_print(10, 25, "   Start Game");
               this->_print(10, 45, "> Test Targets");
               if (buttonPressed()) {
+                u8g.firstPage();
+                do {
+                  this->_print(10, 15, "TEST MODE");
+                  this->_print(5, 35, "Shoot any target");
+                } while ( u8g.nextPage() );
                 GameState = TESTING;
               }
               break;
           }    
-      } while ( u8g.nextPage() );
-    }
-
-    void displayTest() {
-      u8g.firstPage();
-      do {
-        this->_print(10, 15, "TEST MODE");
       } while ( u8g.nextPage() );
     }
 
@@ -123,7 +121,7 @@ class Display: public Runnable {
       this->splash();
     }
 
-    void print(u8g_uint_t x, u8g_uint_t y, const char *str) {
+    void print(u8g_uint_t x, u8g_uint_t y, String str) {
       u8g.firstPage();
       do {
         this->_print(x, y, str);
@@ -136,6 +134,15 @@ class Display: public Runnable {
         this->_print(10, 15, "Player 1: " + String(scores[0]));
         this->_print(10, 35, "Player 2: " + String(scores[1]));
         this->_print(10, 55, "Player 3: " + String(scores[2]));
+      } while ( u8g.nextPage() );
+    }
+
+    void displayTest(byte targetId, unsigned char playerId) {
+      u8g.firstPage();
+      do {
+        this->_print(10, 15, "TEST MODE");
+        this->_print(10, 35, "Target " + String(targetId) + " Hit");
+        this->_print(10, 55, "Player " + String(playerId));
       } while ( u8g.nextPage() );
     }
 
@@ -154,7 +161,6 @@ class Display: public Runnable {
           break;
 
         case TESTING:
-          displayTest();
           if (buttonPressed()) {
             GameState = MENU;
           }

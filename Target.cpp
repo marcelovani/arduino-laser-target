@@ -84,7 +84,7 @@ class Target: public Runnable {
         activeTarget = 0;
       }
 
-      if (!this->isDisabled()) {
+      if (GameState == PLAYING && !this->isDisabled()) {
         switch (this->state) {
           case DROPPED:
             if (arm.isOn()) {
@@ -135,6 +135,21 @@ class Target: public Runnable {
               this->state = UP;
             }
             break;
+        }
+      }
+      else if (GameState == TESTING) {
+        rgb.yellow();
+        this->gunShot = infra.getShot();
+        if (this->gunShot > 0 || this->testButtonClicked()) {
+          display.displayTest(this->targetId, this->gunShot);
+          rgb.red();
+          delay(500);
+          rgb.green();
+          delay(300);
+          rgb.blue();
+          delay(300);
+          laser.on();
+          delay(300);
         }
       }
     }
