@@ -15,6 +15,13 @@ byte activeTarget = 0;
 const byte targetStartPosition = 160;
 const byte targetDropPosition = 90;
 
+// Global state for game modes.
+enum GameModes {
+  MENU = 0,
+  PLAYING = 1,
+  TESTING = 2,
+} GameState;
+
 #ifdef ON_EMULATOR
   // Emulator configuration.
   const unsigned long targetStartDelay = 2;

@@ -7,6 +7,7 @@
 #include "MillisTimer.h"
 #include "MillisTimer.cpp"
 #include "Led.cpp"
+#include "Display.cpp"
 #include "Infra.cpp"
 #include "Laser.cpp"
 #include "RgbLed.cpp"

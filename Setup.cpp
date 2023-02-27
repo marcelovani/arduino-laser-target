@@ -57,12 +57,14 @@
       { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
       { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
       { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
-      { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
+      { 00, 00, 23,  5, 19, 18, 22, 00,  4 }  // 7 -> ok
   };
 #endif
 
 // Create all device instances.
 // @todo use array and loop
+// i.e. Arm * arms = new Arm[NUM_PORTS];
+
 Arm     arm1(pins[1][2]);
 Infra    ir1(pins[1][4]);
 Laser laser1(pins[1][6]);
@@ -100,6 +102,7 @@ RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
 
 // Create instance of the target randomizer.
 TargetRandomizer randomizer;
+Display display(6, 7, 8);
 
 void setup() {
   Serial.begin(9600);
@@ -114,4 +117,6 @@ void setup() {
   targets[7] = new Target(laser7, rgb7, arm7, ir7);
 
   Runnable::setupAll();
+
+  display.splash();
 }
