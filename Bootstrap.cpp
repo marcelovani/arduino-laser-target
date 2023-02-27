@@ -22,7 +22,7 @@ enum GameModes {
   TESTING = 2,
 } GameState;
 
-unsigned char scores[3] = {0, 0, 0};
+unsigned char scores[4] = {0, 0, 0};
 
 #ifdef ON_EMULATOR
   // Emulator configuration.

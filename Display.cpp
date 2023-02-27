@@ -66,9 +66,9 @@ class Display: public Runnable {
               this->_print(10, 25, "> Start Game");
               this->_print(10, 45, "   Test Targets");
               if (buttonPressed()) {
-                scores[0] = 0;
                 scores[1] = 0;
                 scores[2] = 0;
+                scores[3] = 0;
                 displayScores();
                 GameState = PLAYING;
               }
@@ -131,9 +131,9 @@ class Display: public Runnable {
     void displayScores() {
       u8g.firstPage();
       do {
-        this->_print(10, 15, "Player 1: " + String(scores[0]));
-        this->_print(10, 35, "Player 2: " + String(scores[1]));
-        this->_print(10, 55, "Player 3: " + String(scores[2]));
+        this->_print(10, 15, "Player 1: " + String(scores[1]));
+        this->_print(10, 35, "Player 2: " + String(scores[2]));
+        this->_print(10, 55, "Player 3: " + String(scores[3]));
       } while ( u8g.nextPage() );
     }
 
