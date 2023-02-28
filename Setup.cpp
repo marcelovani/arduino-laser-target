@@ -104,7 +104,7 @@ RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
 TargetRandomizer randomizer;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Create instances of targets.
   targets[1] = new Target(laser1, rgb1, arm1, ir1);

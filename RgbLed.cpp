@@ -1,5 +1,10 @@
 class RgbLed: public Runnable {
-    Led rLed, gLed, bLed;
+  Led rLed, gLed, bLed;
+
+  private:
+    unsigned char priority() {
+      return 2;
+    }
 
   public:
     RgbLed(byte rPin, byte gPin, byte bPin) :

@@ -10,6 +10,10 @@ class Led: public Runnable {
     MillisTimer _timerOff;
     byte status;
 
+    unsigned char priority() {
+      return 2;
+    }
+
   public:
     Led(byte pin) : pin(pin) {
     }

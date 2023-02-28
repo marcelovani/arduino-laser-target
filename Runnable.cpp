@@ -10,6 +10,7 @@ class Runnable {
 
     virtual void setup() = 0;
     virtual void loop() = 0;
+    virtual unsigned char priority() = 0;
 
     static void setupAll() {
       for (Runnable *r = headRunnable; r; r = r->nextRunnable)
@@ -17,8 +18,15 @@ class Runnable {
     }
 
     static void loopAll() {
-      for (Runnable *r = headRunnable; r; r = r->nextRunnable)
+      for (Runnable *r = headRunnable; r; r = r->nextRunnable) {
+        // High priority classes runs more often.
+        for (Runnable *p = headRunnable; p; p = p->nextRunnable) {
+          if (p->priority() < 2) {
+            p->loop();
+          }
+        }
         r->loop();
+      }
     }
 
 };

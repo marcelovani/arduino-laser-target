@@ -16,6 +16,10 @@ class Target: public Runnable {
   private:
     unsigned char gunShot;
 
+    unsigned char priority() {
+      return 2;
+    }
+
   public:
     Target() {}
 
@@ -83,8 +87,22 @@ class Target: public Runnable {
         this->disable();
         activeTarget = 0;
       }
-
-      if (GameState == PLAYING && !this->isDisabled()) {
+      if (GameState == TESTING) {
+        this->gunShot = infra.getShot();
+        if (this->gunShot > 0 || this->testButtonClicked()) {
+          Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
+          display.displayTest(this->targetId, this->gunShot);
+          rgb.red();
+          delay(500);
+          rgb.green();
+          delay(300);
+          rgb.blue();
+          delay(300);
+          laser.on();
+          delay(300);
+        }
+      }
+      else if (GameState == PLAYING && !this->isDisabled()) {
         switch (this->state) {
           case DROPPED:
             if (arm.isOn()) {
@@ -135,21 +153,6 @@ class Target: public Runnable {
               this->state = UP;
             }
             break;
-        }
-      }
-      else if (GameState == TESTING) {
-        rgb.yellow();
-        this->gunShot = infra.getShot();
-        if (this->gunShot > 0 || this->testButtonClicked()) {
-          display.displayTest(this->targetId, this->gunShot);
-          rgb.red();
-          delay(500);
-          rgb.green();
-          delay(300);
-          rgb.blue();
-          delay(300);
-          laser.on();
-          delay(300);
         }
       }
     }

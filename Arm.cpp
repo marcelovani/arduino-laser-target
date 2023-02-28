@@ -11,6 +11,10 @@ class Arm: public Runnable {
     byte drop_position;
     unsigned long timer_delay;
 
+    unsigned char priority() {
+      return 2;
+    }
+
     /**
      * Send command to arm.
      */

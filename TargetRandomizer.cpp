@@ -6,6 +6,10 @@ class TargetRandomizer: public Runnable {
     MillisTimer _timerOn;
     const byte start_delay = 5;
 
+    unsigned char priority() {
+      return 2;
+    }
+
     /**
      * Logic to select the next available target.
      */

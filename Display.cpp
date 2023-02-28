@@ -25,6 +25,10 @@ class Display: public Runnable {
     byte encoderClkPin, encoderDtPin, encoderBtnPin;
     int lastClk = HIGH;
 
+    unsigned char priority() {
+      return 1;
+    }
+
     boolean buttonPressed() {
       return bounce.fell();
     }
@@ -40,6 +44,7 @@ class Display: public Runnable {
     }
 
     void displayMenu() {
+      delay(10);
       u8g.firstPage();
       do {
         // Check rotary knob.
@@ -63,8 +68,8 @@ class Display: public Runnable {
 
         switch (MenuState) {
             case START:
-              this->_print(10, 25, "> Start Game");
-              this->_print(10, 45, "   Test Targets");
+              this->_print(10, 30, "> Start Game");
+              this->_print(10, 50, "   Test Targets");
               if (buttonPressed()) {
                 scores[1] = 0;
                 scores[2] = 0;
@@ -75,13 +80,14 @@ class Display: public Runnable {
             break;
 
             case TEST:
-              this->_print(10, 25, "   Start Game");
-              this->_print(10, 45, "> Test Targets");
+              this->_print(10, 30, "   Start Game");
+              this->_print(10, 50, "> Test Targets");
               if (buttonPressed()) {
                 u8g.firstPage();
                 do {
-                  this->_print(10, 15, "TEST MODE");
-                  this->_print(5, 35, "Shoot any target");
+                  this->_print(14, 14, "TEST MODE");
+                  this->_print(25, 40, "Shoot any");
+                  this->_print(40, 55, "target");
                 } while ( u8g.nextPage() );
                 GameState = TESTING;
               }
@@ -131,9 +137,10 @@ class Display: public Runnable {
     void displayScores() {
       u8g.firstPage();
       do {
-        this->_print(10, 15, "Player 1: " + String(scores[1]));
-        this->_print(10, 35, "Player 2: " + String(scores[2]));
-        this->_print(10, 55, "Player 3: " + String(scores[3]));
+        this->_print(30, 14, "SCORES");
+        this->_print(10, 33, "Player 1: " + String(scores[1]));
+        this->_print(10, 47, "Player 2: " + String(scores[2]));
+        this->_print(10, 62, "Player 3: " + String(scores[3]));
       } while ( u8g.nextPage() );
     }
 
@@ -148,7 +155,6 @@ class Display: public Runnable {
 
     void loop() {
       bounce.update();
-
       switch (GameState) {
         case MENU:
           displayMenu();

@@ -1,6 +1,11 @@
 class Laser: public Runnable {
   Led led;
 
+  private:
+    unsigned char priority() {
+      return 2;
+    }
+
   public:
     Laser(byte pin) :
       led(pin) {

@@ -11,7 +11,7 @@ class Infra: public Runnable {
     // Threshold. @todo make configurable
     int t = 1100;
     // Which gun shot the target.
-    byte player;
+    unsigned char player;
 
     #ifdef INFRA_ENABLED
       IrReceiverPoll receiver;
@@ -22,6 +22,10 @@ class Infra: public Runnable {
     // Count bad readings.
     byte bad_readings;
     const byte bad_readings_limit = 5;
+
+    unsigned char priority() {
+      return 2;
+    }
 
     unsigned char translateIR()
     {
