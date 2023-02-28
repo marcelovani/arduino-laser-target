@@ -16,7 +16,7 @@ emulators (links below), we use a script to combine all files into one file i.e.
 
 ## Emulators
 1. Project on [Wokwi emulator](https://wokwi.com/projects/353876404628899841)
-1. Project on [Tinkercad emulator](https://www.tinkercad.com/things/30sClkF22Tl-copy-of-led-demo-with-classes/editel?tenant=circuits)
+1. Project on [Tinkercad emulator](https://www.tinkercad.com/things/9kXeDWTP3ij-laser-target)
 
 <img width="776" alt="Tinkercad project" src="https://user-images.githubusercontent.com/2162363/215312279-5ef01fd4-2fc6-4fd4-9c69-44b69fddefcc.png">
 

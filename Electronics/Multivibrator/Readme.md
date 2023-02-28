@@ -9,7 +9,7 @@ We are using an existing toy that already shoots using Infra-red.
 ### Laser
 Laser is used only for visuals, ideally this game should be played in a wide space like a garage, with a smoke machine to make the laser beams visible.
 This circuit is added to the toy to make it shoot only once, for a short period of time.
-Project on [Tinkercad emulator](https://www.tinkercad.com/things/8t7ajQeRsDk-copy-of-astable-multivibrator-with-transistor/editel?tenant=circuits)
+Project on [Tinkercad emulator](https://www.tinkercad.com/things/1IXjZiIoPQl-laser-tag-gun-astable-multivabrator)
 
 <img width="1124" alt="Tinkercad electronics" src="https://user-images.githubusercontent.com/2162363/215312438-251dfe73-0eaf-4d4a-b7e8-b2f36ff1289d.png">
 
