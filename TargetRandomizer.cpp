@@ -19,7 +19,6 @@ class TargetRandomizer: public Runnable {
       // Randomize.
       randomSeed(analogRead(0));
       nextTarget = random(targetCount) + 1;
-      Serial.println("Random target " + String(nextTarget) + " out of " + String(targetCount));
 
       // Check if target is disabled.
       if (this->isTargetDisabled(nextTarget)) {
@@ -27,14 +26,12 @@ class TargetRandomizer: public Runnable {
       }
 
       // Try not to select same target.
-      if (nextTarget == activeTarget) {
-        Serial.println("Picking next target");
+      if (nextTarget == activeTarget && activeTarget < targetCount) {
         nextTarget++;
       }
 
       // Check for invalid target.
       if (nextTarget > targetCount) {
-        Serial.println("Target too big");
         return;
       }
 
