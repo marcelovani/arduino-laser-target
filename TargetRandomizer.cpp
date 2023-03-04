@@ -15,25 +15,27 @@ class TargetRandomizer: public Runnable {
      */
     void pickRandomTarget() {
       byte nextTarget;
-      byte max = NUM_PORTS - 1;
 
       // Randomize.
       randomSeed(analogRead(0));
-      nextTarget = random(NUM_PORTS);
+      nextTarget = random(targetCount) + 1;
+      Serial.println("Random target " + String(nextTarget) + " out of " + String(targetCount));
 
       // Check if target is disabled.
       if (this->isTargetDisabled(nextTarget)) {
-        this->pickRandomTarget();
+        return;
       }
 
       // Try not to select same target.
-      if (nextTarget == activeTarget && max > nextTarget) {
+      if (nextTarget == activeTarget) {
+        Serial.println("Picking next target");
         nextTarget++;
       }
 
-      // If value is invalid, disable and pick another one.
-      if (nextTarget > max) {
-        this->pickRandomTarget();
+      // Check for invalid target.
+      if (nextTarget > targetCount) {
+        Serial.println("Target too big");
+        return;
       }
 
       // Check if target is up.
@@ -41,14 +43,12 @@ class TargetRandomizer: public Runnable {
         activeTarget = nextTarget;
       }
 
-      if (activeTarget > 0) {
-        Serial.println("Active target " + String(activeTarget));
-        this->_timerOn.stop();
+      if (activeTarget > 0 && !this->_timerOn.isRunning()) {
         // Timer delay to select a new target when there is no shoots.
         randomSeed(analogRead(0));
         // @todo reduce delay based on game level.
         byte seconds = random(5) + this->start_delay;
-        Serial.println("Idle delay " + String(seconds) + "s");
+        display.displayStatus(String("Idle delay " + String(seconds) + "s"));
         this->timerOnStart(seconds);
       }
     }
@@ -87,6 +87,26 @@ class TargetRandomizer: public Runnable {
       }
     }
 
+    /**
+     * Reset game.
+     */
+    void reset() {
+      // Reset scores.
+      scores[1] = 0;
+      scores[2] = 0;
+      scores[3] = 0;
+
+      // Reset targets.
+      unsigned char p;
+      for (p = 1; p < targetCount+1; p++) {
+        disabledTargets[p] = false;
+        targets[p]->enable();
+      }
+
+      // Game start.
+      GameState = PLAYING;
+    }
+
   public:
     TargetRandomizer() {}
 
@@ -96,6 +116,11 @@ class TargetRandomizer: public Runnable {
     }
 
     void loop() {
+      // Reset game
+      if (GameState == RESET) {
+        this->reset();
+      }
+
       if (GameState != PLAYING) {
         return;
       }
