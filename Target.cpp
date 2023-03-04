@@ -4,7 +4,7 @@ class Target: public Runnable {
     Arm &arm;
     Infra &infra;
     byte testButtonPin;
-    byte targetId;
+    unsigned char targetId;
 
     enum State {
       DISABLED = 0,
@@ -20,9 +20,139 @@ class Target: public Runnable {
       return 2;
     }
 
-  public:
-    Target() {}
+    // Check if test button was clicked on emulator.
+    bool testButtonClicked() {
+      #ifndef INFRA_ENABLED
+        if (this->infra.getPin() > 0) {
+          return digitalRead(this->testButtonPin) == LOW;
+        }
+      #endif
+      return false;
+    }
 
+    /**
+     * Test mode.
+     * Tests one target at a time, using the knob to change targets.
+     */
+    void test() {
+      if (activeTarget != this->targetId) {
+        return;
+      }
+
+      // Reset bad readings so that we can continue debugging targets.
+      this->infra.reset();
+
+      rgb.green();
+
+      // Test button on emulator counts as player 1.
+      if (this->testButtonClicked()) {
+        this->gunShot = 1;
+      }
+      else {
+        this->gunShot = infra.getShot();
+      }
+
+      // Check if target is shot.
+      if (this->gunShot > 0) {
+        // Update display.
+        display.displayHit(this->gunShot, this->targetId);
+
+        // Blink lights.
+        laser.on();
+        delay(200);
+
+        laser.off();
+        delay(200);
+
+        rgb.red();
+        delay(200);
+
+        rgb.blue();
+        delay(200);
+
+        rgb.off();
+        delay(100);
+
+        // Update display.
+        display.displayStatus("Shoot targets");
+      }
+    }
+
+    /**
+     * Play mode.
+     */
+    void play() {
+      switch (this->state) {
+      case DROPPED:
+        if (arm.isOn()) {
+          // Change state.
+          this->state = UP;
+        }
+        else {
+          rgb.off();
+        }
+        break;
+
+      case UP:
+        if (activeTarget == this->targetId) {
+          // Blink laser.
+          laser.on();
+          delay(200);
+          laser.off();
+          delay(200);
+          laser.on();
+          delay(200);
+          laser.off();
+          delay(200);
+          // Change stage.
+          this->state = READY;
+        }
+        else {
+          // @todo find out why blue turns off when laser is blinking and turn this on again.
+          // rgb.blue();
+        }
+        break;
+
+      case READY:
+        if (activeTarget == this->targetId) {
+          rgb.green();
+
+          // On emulator, test button counts as player 1.
+          if (this->testButtonClicked()) {
+            this->gunShot = 1;
+          }
+          else {
+            this->gunShot = infra.getShot();
+          }
+
+          // Check if target is shot.
+          if (this->gunShot > 0) {
+            // Update display.
+            display.displayHit(this->gunShot, this->targetId);
+            // Red light.
+            rgb.red();
+            // Drop arm.
+            this->state = DROPPED;
+            delay(100);
+            arm.drop();
+            // Special code to add random delay before next target selection.
+            activeTarget = 254;
+            // Update scores;
+            scores[this->gunShot]++;
+            delay(500);
+            // Update display.
+            display.displayScores();
+          }
+        }
+        else {
+          // Change state.
+          this->state = UP;
+        }
+        break;
+      }
+    }
+
+  public:
     Target(
         Laser &laserInstance,
         RgbLed &rgbInstance,
@@ -54,19 +184,16 @@ class Target: public Runnable {
       #endif
     }
 
-    bool testButtonClicked() {
-      #ifndef INFRA_ENABLED
-        if (this->infra.getPin() > 0) {
-          return digitalRead(this->testButtonPin) == LOW;
-        }
-      #endif
-      return false;
-    }
-
+    // Disables the target.
     void disable() {
       this->state = DISABLED;
       rgb.off();
       arm.reset();
+    }
+
+    void enable() {
+      this->state = DROPPED;
+      this->infra.reset();
     }
 
     boolean isDisabled() {
@@ -80,80 +207,32 @@ class Target: public Runnable {
     boolean isUp() {
       return this->state == UP;
     }
-
+  
     void loop() {
       // When infra is not working correctly or arm is not available, disable and change target.
       if (infra.isDisabled() && !this->isDisabled()) {
         this->disable();
+        disabledTargets[this->targetId] = true;
         activeTarget = 0;
+        // Update display.
+        display.displayStatus("Disabling " + String(this->targetId));
       }
+
+      // Return if target is disabled.
+      if (this->isDisabled()) {
+        return;
+      }
+
+      // Test mode.
       if (GameState == TESTING) {
-        this->gunShot = infra.getShot();
-        if (this->gunShot > 0 || this->testButtonClicked()) {
-          Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
-          display.displayTest(this->targetId, this->gunShot);
-          rgb.red();
-          delay(500);
-          rgb.green();
-          delay(300);
-          rgb.blue();
-          delay(300);
-          laser.on();
-          delay(300);
-        }
+        this->test();
+        return;
       }
-      else if (GameState == PLAYING && !this->isDisabled()) {
-        switch (this->state) {
-          case DROPPED:
-            if (arm.isOn()) {
-              this->state = UP;
-            }
-            else {
-              rgb.off();
-            }
-            break;
 
-          case UP:
-            if (activeTarget == this->targetId) {
-              laser.on();
-              delay(200);
-              laser.off();
-              delay(200);
-              laser.on();
-              delay(200);
-              laser.off();
-              delay(200);
-              //laser.blink();
-              this->state = READY;
-            }
-            else {
-              // @todo find out why blue turns off when laser is blinking and turn this on again.
-              // rgb.blue();
-            }
-            break;
-
-          case READY:
-            if (activeTarget == this->targetId) {
-              rgb.green();
-              this->gunShot = infra.getShot();
-              if (this->gunShot > 0 || this->testButtonClicked()) {
-                Serial.println("Target " + String(this->targetId) + " Hit by player " + String(this->gunShot));
-                rgb.red();
-                this->state = DROPPED;
-                delay(100);
-                arm.drop();
-                // Special code to add random delay before next target selection.
-                activeTarget = 254;
-                // Update scores;
-                scores[this->gunShot]++;
-                display.displayScores();
-              }
-            }
-            else {
-              this->state = UP;
-            }
-            break;
-        }
+      // Play mode.
+      if (GameState == PLAYING) {
+        this->play();
+        return;
       }
     }
 };
