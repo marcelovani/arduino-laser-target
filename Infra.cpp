@@ -21,7 +21,8 @@ class Infra: public Runnable {
   private:
     // Count bad readings.
     byte bad_readings;
-    const byte bad_readings_limit = 5;
+    const byte bad_readings_limit = 3;
+    bool disabled;
 
     unsigned char priority() {
       return 2;
@@ -32,10 +33,18 @@ class Infra: public Runnable {
       this->player = 0;
 
       #ifdef INFRA_ENABLED
+        // @todo try to reduce beginning timeout to fix latency issues when IR is not connected.
+        // Serial.println(receiver.getBeginningTimeout());
+        // Serial.println(receiver.getEndingTimeout());
+
+        if (this->isDisabled()) {
+          return 0;
+        }
 
         // Ignore noise and bad readings.
         if (receiver.getDataLength() < 17) {
           Serial.println("IR " + String(this->pin) + " Error: too short: " + String(receiver.getDataLength()));
+          //this->bad_readings++;
           return 0;
         }
 
@@ -46,8 +55,11 @@ class Infra: public Runnable {
 
         // Ignore noise and bad readings.
         if (d1 > t * 3 || d2 > t * 3) {
-          Serial.println("IR " + String(this->pin) + " ERROR: Bad code: " + String(d1) + " " + String(d2));
           this->bad_readings++;
+          if (GameState == TESTING) {
+            receiver.dump(Serial, true)l
+          }
+          Serial.println("IR " + String(this->pin) + " ERROR: Bad code: " + String(d1) + " " + String(d2));
           return 0;
         }
 
@@ -56,14 +68,14 @@ class Infra: public Runnable {
         if (d1 > t) {
           if (d2 < t) {
             this->player = 1;
-            Serial.println("***********");
+            // Serial.println("***********");
           } else {
-            Serial.println("***********     ***********     ***********");
+            // Serial.println("***********     ***********     ***********");
             this->player = 3;
           }
         }
         else if (d2 > t) {
-          Serial.println("***********     ***********");
+          // Serial.println("***********     ***********");
           this->player = 2;
         }
       #endif
@@ -101,7 +113,22 @@ class Infra: public Runnable {
     }
 
     bool isDisabled() {
-      return this->getPin() == 0 || this->bad_readings > this->bad_readings_limit;
+      if (!this->disabled) {
+        if (this->getPin() == 0) {
+          #ifdef INFRA_ENABLED
+            receiver.disable();
+          #endif
+          this->disabled = true;
+        }
+        else if (this->bad_readings > this->bad_readings_limit) {
+          Serial.println("Disabled IR due to bad readings");
+          #ifdef INFRA_ENABLED
+            receiver.disable();
+          #endif
+          this->disabled = true;
+        }
+      }
+      return this->disabled;
     }
 
     void loop() {
