@@ -21,7 +21,7 @@ class Display: public Runnable {
   Bounce bounce = Bounce();
 
   private:
-    int menuOption = 0;
+    unsigned char menuOption = 0;
     byte encoderClkPin, encoderDtPin, encoderBtnPin;
     int lastClk = HIGH;
 
@@ -43,52 +43,92 @@ class Display: public Runnable {
       u8g.drawStr(x, y, charBuf);
     }
 
+    /**
+     * Reads the knob.
+     * Returns:
+     *  0 no change
+     *  1 for anti-clockwise turn
+     *  2 for clock-wise turn
+     */
+    byte readKnob() {
+      int newClk = digitalRead(this->encoderClkPin);
+      if (newClk != lastClk) {
+        // There was a change on the CLK pin
+        lastClk = newClk;
+        int dtValue = digitalRead(this->encoderDtPin);
+        if (newClk == LOW && dtValue == HIGH) {
+          // Turned anti-clockwise
+          return 1;
+        }
+        if (newClk == LOW && dtValue == LOW) {
+          // Turned clockwise
+          return 2;
+        }
+      }
+      return 0;
+    }
+
+    /**
+     * Helper to change the menu states.
+     */
+    void readMenuKnob() {
+      byte knob = readKnob();
+      if (knob == 1) {
+        if (menuOption < 1) {
+          menuOption++;
+          MenuState = TEST;
+        }
+      }
+      else if (knob == 2) {
+        if (menuOption > 0) {
+          menuOption--;
+          MenuState = START;
+        }
+      }
+    }
+
+    /**
+     * Helper to change the targets.
+     */
+    void readTargetKnob() {
+      byte knob = readKnob();
+      if (knob == 1) {
+        if (activeTarget < targetCount) {
+          activeTarget++;
+        }
+        displayStatus(String("Target >"));
+      }
+      else if (knob == 2) {
+        if (activeTarget > 1) {
+          activeTarget--;
+        }
+        displayStatus(String("< Target"));
+      }
+    }
+
     void displayMenu() {
       delay(10);
+      u8g.setFont(u8g_font_9x15B);
       u8g.firstPage();
       do {
-        // Check rotary knob.
-        int newClk = digitalRead(this->encoderClkPin);
-        if (newClk != lastClk) {
-          // There was a change on the CLK pin
-          lastClk = newClk;
-          int dtValue = digitalRead(this->encoderDtPin);
-          if (newClk == LOW && dtValue == HIGH) {           
-            if (menuOption < 1) {
-              menuOption++;
-            }
-          }
-          if (newClk == LOW && dtValue == LOW) {
-            if (menuOption > 0) {
-              menuOption--;
-            }
-          }
-          MenuState = menuOption;
-        }
-
+        this->readMenuKnob();
         switch (MenuState) {
             case START:
-              this->_print(10, 30, "> Start Game");
-              this->_print(10, 50, "   Test Targets");
+              this->_print(5, 30, "> Start Game");
+              this->_print(5, 50, "  Test Mode");
               if (buttonPressed()) {
-                scores[1] = 0;
-                scores[2] = 0;
-                scores[3] = 0;
-                displayScores();
-                GameState = PLAYING;
+                // Change game state.
+                GameState = RESET;
               }
             break;
 
             case TEST:
-              this->_print(10, 30, "   Start Game");
-              this->_print(10, 50, "> Test Targets");
+              this->_print(5, 30, "  Start Game");
+              this->_print(5, 50, "> Test Mode");
               if (buttonPressed()) {
-                u8g.firstPage();
-                do {
-                  this->_print(14, 14, "TEST MODE");
-                  this->_print(25, 40, "Shoot any");
-                  this->_print(40, 55, "target");
-                } while ( u8g.nextPage() );
+                // Update display.
+                displayStatus("Shoot targets");
+                // Change game state.
                 GameState = TESTING;
               }
               break;
@@ -97,6 +137,7 @@ class Display: public Runnable {
     }
 
     void splash() {
+      u8g.setFont(u8g_font_gdb12);
       u8g.firstPage();
       do {
         this->_print(1, 15, "LASER TARGET");
@@ -122,9 +163,8 @@ class Display: public Runnable {
       bounce.attach(this->encoderBtnPin, INPUT_PULLUP);
       bounce.interval(25);
 
-      u8g.setFont(u8g_font_gdb12);
-      u8g.setColorIndex(1);
       this->splash();
+      u8g.setColorIndex(1);
     }
 
     void print(u8g_uint_t x, u8g_uint_t y, String str) {
@@ -133,8 +173,45 @@ class Display: public Runnable {
         this->_print(x, y, str);
       } while ( u8g.nextPage() );
     }
-  
+
+    // Display Status.
+    void displayStatus(String msg) {
+      u8g.setFont(u8g_font_9x15B);
+      String status = "";
+      String active = "";
+
+      // Prepare strings.
+      unsigned char p;
+      for (p = 1; p < targetCount+1; p++) {
+
+        // Display port number or _.
+        if (disabledTargets[p]) {
+          status = status + "_";
+        }
+        else {
+          status = status + String(p);
+        }
+
+        // Show active target.
+        if (p == activeTarget) {
+          active = active + "^";
+        }
+        else {
+          active = active + " ";
+        }
+      }
+
+      u8g.firstPage();
+      do {
+        this->_print(20, 15, "TARGETS");
+        this->_print(20, 35, status);
+        this->_print(20, 50, active);
+        this->_print(01, 59, msg);
+      } while ( u8g.nextPage() );
+    }
+
     void displayScores() {
+      u8g.setFont(u8g_font_9x15B);
       u8g.firstPage();
       do {
         this->_print(30, 14, "SCORES");
@@ -144,12 +221,12 @@ class Display: public Runnable {
       } while ( u8g.nextPage() );
     }
 
-    void displayTest(byte targetId, unsigned char playerId) {
+    void displayHit(unsigned char player, unsigned char target) {
+      u8g.setFont(u8g_font_fub17);
       u8g.firstPage();
       do {
-        this->_print(10, 15, "TEST MODE");
-        this->_print(10, 35, "Target " + String(targetId) + " Hit");
-        this->_print(10, 55, "Player " + String(playerId));
+        this->_print(20, 25, "Player: " + String(player));
+        this->_print(27, 55, "HIT: " + String(target));
       } while ( u8g.nextPage() );
     }
 
@@ -161,12 +238,14 @@ class Display: public Runnable {
           break;
 
         case PLAYING:
+          readTargetKnob();
           if (buttonPressed()) {
             GameState = MENU;
           }
           break;
 
         case TESTING:
+          readTargetKnob();
           if (buttonPressed()) {
             GameState = MENU;
           }
