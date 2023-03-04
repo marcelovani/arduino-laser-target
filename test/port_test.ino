@@ -14,25 +14,25 @@ bool SHORT=false;
 // Orange           - 7 (+5v)
 // White/Orange     - 8 (RGB Red)
 int pins[PORTS+1][PINS+1] = {
-    //     1   2   3   4   5   6   7   8    <- Wires
-    { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
-    { 00, 00, 03, 16, 02, 17, 15, 00, 14 }, // 1 -> ok
-    { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
-    { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
-    { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
-    { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
-    { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
-    { 00, 00, 23, 20, 19, 18, 22, 00, 21 }  // 7 -> ok
+  //     1   2   3   4   5   6   7   8    <- Wires
+  { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
+  { 00, 00,  3, 16,  2, 17, 15, 00, 14 }, // 1 -> ok
+  { 00, 00, 43, 45, 47, 49, 51, 00, 53 }, // 2 -> ok
+  { 00, 00, 50, 39, 37, 35, 41, 00, 52 }, // 3 -> ok
+  { 00, 00, 32, 42, 48, 46, 44, 00, 33 }, // 4 -> ok
+  { 00, 00, 26, 34, 40, 38, 36, 00, 27 }, // 5 -> ok
+  { 00, 00, 25, 28, 31, 30, 29, 00, 24 }, // 6 -> ok
+  { 00, 00, 23,  5, 19, 18, 22, 00,  4 }  // 7 -> ok
 };
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 
     // Test to make sure that no pin is in short.
     int p, i, pin;
-    for(p = 1; p < PORTS; p++) {
-        Serial.println("Port " + String(p + 1));
-        for(i = 2; i < PINS+1; i++) {
+    for(p = 1; p < PORTS+1; p++) {
+        Serial.println("Port " + String(p));
+        for(i = 1; i < PINS+1; i++) {
             pin = pins[p][i];
             if (pin > 0) {              
               Serial.print("Pos " + String(i) + " Pin " + String(pin) + " ");
@@ -47,7 +47,10 @@ void setup() {
                 Serial.println("OK");
               }
               delay(100);
-              pinMode(pin, OUTPUT);
+              // Skip IR port.
+              if (i != 4) {
+                pinMode(pin, OUTPUT);
+              }
             }
         }
     }
@@ -57,16 +60,22 @@ void loop() {
   // LED test.
   int p, i, pin;
   // LED on.
-  for(i = 2; i < PINS+1; i++) {
-    for(p = 1; p < PORTS; p++) {
+  for(i = 1; i < PINS+1; i++) {
+    for(p = 1; p < PORTS+1; p++) {
       pin = pins[p][i];
-      digitalWrite(pin, HIGH);
+      // Skip IR port.
+      if (i != 4) {
+        digitalWrite(pin, HIGH);
+      }
     }
     delay(500);
     // LED off.
-    for(p = 1; p < PORTS; p++) {
+    for(p = 1; p < PORTS+1; p++) {
       pin = pins[p][i];
-      digitalWrite(pin, LOW);
+      // Skip IR port.
+      if (i != 4) {
+        digitalWrite(pin, LOW);
+      }
     }
   }
 }
