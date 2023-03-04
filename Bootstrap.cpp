@@ -2,7 +2,7 @@
 // #define ON_EMULATOR
 
 // @todo use include for this file and in the port_test.ino file.
-const byte NUM_PORTS = 8;
+const byte NUM_PORTS = 7;
 const byte PINS = 8;
 
 // Manual set number of targets. @todo use arrays and make this dynamic
@@ -10,6 +10,9 @@ byte targetCount = 0;
 
 // Global variable to make sure only one target can receive shots at a time.
 byte activeTarget = 0;
+
+// Global variable to track disabled targets
+boolean disabledTargets[NUM_PORTS+1];
 
 // Global configuration for target positions.
 const byte targetStartPosition = 160;
@@ -20,6 +23,7 @@ enum GameModes {
   MENU = 0,
   PLAYING = 1,
   TESTING = 2,
+  RESET = 3,
 } GameState;
 
 unsigned char scores[4] = {0, 0, 0};
