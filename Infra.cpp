@@ -1,26 +1,26 @@
 #ifdef INFRA_ENABLED
-  #if !defined(RAW_BUFFER_LENGTH)
-    #define RAW_BUFFER_LENGTH 18
-  #endif
-  #define NO_LED_FEEDBACK_CODE
-  #include <IRremote.hpp>
-#endif
+
+#define RAW_BUFFER_LENGTH 18
+#define NO_DECODER
+#define DEBUG
+
+#include <IRremote.hpp>
+
+IRrecv receiver;
 
 // Infra Red Receiver.
 class Infra: public Runnable {
     uint_fast8_t pin;
-    #ifdef INFRA_ENABLED
-      IRrecv receiver;
-    #endif
+    const uint_fast8_t bufferSize = 18;
 
   private:
     // Count bad readings.
     byte bad_readings;
-    const byte bad_readings_limit = 3;
+    // Bad readings limit.
+    const byte bad_readings_limit = 50;
+    // Enable/disable IR.
     bool disabled;
-    // Duration readings.
-    uint32_t d1, d2;
-    // Threshold. @todo make configurable
+    // User detection threshold.
     uint32_t t = 1100;
     // Which gun shot the target.
     unsigned char player;
@@ -29,101 +29,103 @@ class Infra: public Runnable {
       return 2;
     }
 
-    void translateIR() {
+    /**
+     * Compare the received data and try to get the player who shot the target.
+     */
+    void getPlayer() {
+      uint32_t d1, d2;
       this->player = 0;
 
-      #ifdef INFRA_ENABLED
-        if (this->isDisabled()) {
-          return 0;
+      if (this->isDisabled()) {
+        return;
+      }
+
+      // Decode IR interrupt data.
+      if (!receiver.decode()) {
+        return;
+      }
+
+      receiver.resume();
+      uint_fast8_t lengh = receiver.decodedIRData.rawDataPtr->rawlen;
+
+      if (receiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
+        // Too many bytes received.
+      }
+      else if (lengh < RAW_BUFFER_LENGTH) {
+        // Too few bytes received.
+      }
+      else {
+        // Use data length to get the duration of the 3th and 1st position from the end.
+        d1 = receiver.decodedIRData.rawDataPtr->rawbuf[lengh - 3] * MICROS_PER_TICK;
+        d2 = receiver.decodedIRData.rawDataPtr->rawbuf[lengh - 1] * MICROS_PER_TICK;
+      }
+
+      // Ignore noise and bad readings.
+      if (d1 > t * 3 || d2 > t * 3) {
+        this->bad_readings++;
+        return;
+      }
+
+      if (d1 > t) {
+        if (d2 < t) {
+          this->player = 1;
+          Serial.println("***********");
+        } else {
+          Serial.println("***********     ***********     ***********");
+          this->player = 3;
         }
-
-        uint_fast16_t len = receiver.decodedIRData.rawDataPtr->rawlen;
-
-        // Ignore noise and bad readings.
-        if (len < 17) {
-          return 0;
-        }
-
-        // Use data length to get the duration of the 4th position from the end.
-        d1 = receiver.decodedIRData.rawDataPtr->rawbuf[len - 3] * MICROS_PER_TICK;
-        // Use data length to get the duration of the 2th position from the end.
-        d2 = receiver.decodedIRData.rawDataPtr->rawbuf[len - 1] * MICROS_PER_TICK;
-
-        // Ignore noise and bad readings.
-        if (d1 > t * 3 || d2 > t * 3) {
-          this->bad_readings++;
-          Serial.println("IR " + String(this->pin) + " ERROR: Bad code: " + String(d1) + " " + String(d2));
-          return 0;
-        }
-
-        Serial.println("Data points " + String(d1) + ", " + String(d2));
-
-        if (d1 > t) {
-          if (d2 < t) {
-            this->player = 1;
-            Serial.println("***********");
-          } else {
-            Serial.println("***********     ***********     ***********");
-            this->player = 3;
-          }
-        }
-        else if (d2 > t) {
-          Serial.println("***********     ***********");
-          this->player = 2;
-        }
-      #endif
+      }
+      else if (d2 > t) {
+        Serial.println("***********     ***********");
+        this->player = 2;
+      }
     }
 
   public:
-    #ifdef INFRA_ENABLED
-      Infra(uint_fast8_t pin): pin(pin), receiver() {}
-    #else
-      Infra(uint_fast8_t pin): pin(pin) {}
-    #endif
+    Infra(uint_fast8_t pin): pin(pin) {}
 
     void setup() {
-      receiver.begin(this->pin, false);
+      receiver.begin(this->pin);
     }
 
     void reset() {
       this->bad_readings = 0;
     }
 
+    /**
+     * Disables the timer for IR reception.
+     */
+    void stop() {
+      receiver.stop();
+    }
+
+    void resume() {
+      receiver.resume();
+    }
+
+    void changePin() {
+      receiver.setReceivePin(this->pin);
+    }
+
     uint_fast8_t getPin() {
       return this->pin;
     }
 
+    // Checks received an IR signal
     unsigned char getShot() {
-      // Checks received an IR signal
-      #ifdef INFRA_ENABLED
-        if (receiver.decode()) {
-          // Serial.println(receiver.decodedIRData.flags);
-          if (receiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
-            Serial.println("IR Data overflow");
-          }
-          else {
-            this->translateIR();
-            receiver.resume();
-            return this->player;
-          }
-        }
-      #endif
-      return 0;
+      // Change receiver pin.
+      this->changePin();
+      // Get player.
+      this->getPlayer();
+
+      return this->player;
     }
 
     bool isDisabled() {
       if (!this->disabled) {
-        if (this->getPin() == 0) {
-          #ifdef INFRA_ENABLED
-            receiver.stop();
-          #endif
-          this->disabled = true;
-        }
-        else if (this->bad_readings > this->bad_readings_limit) {
-          Serial.println("Disabled IR due to bad readings");
-          #ifdef INFRA_ENABLED
-            receiver.stop();
-          #endif
+        if (this->getPin() == 0 || (this->bad_readings > this->bad_readings_limit)) {
+          Serial.println("Pin " + String(this->getPin()));
+          Serial.println("Bad readings " + String(this->bad_readings));
           this->disabled = true;
         }
       }
@@ -131,5 +133,8 @@ class Infra: public Runnable {
     }
 
     void loop() {
+      // Loop will be controlled by parent class (Target).
     }
 };
+
+#endif
