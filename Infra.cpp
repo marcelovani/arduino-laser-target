@@ -2,7 +2,7 @@
 
 #define RAW_BUFFER_LENGTH 18
 #define NO_DECODER
-#define DEBUG
+// #define DEBUG
 
 #include <IRremote.hpp>
 

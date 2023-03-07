@@ -14,11 +14,10 @@ class TargetRandomizer: public Runnable {
      * Logic to select the next available target.
      */
     void pickRandomTarget() {
-      byte nextTarget;
-
       // Randomize.
       randomSeed(analogRead(0));
-      nextTarget = random(targetCount) + 1;
+      long max = (long) targetCount + 1;
+      byte nextTarget = random(max);
 
       // Check if target is disabled.
       if (this->isTargetDisabled(nextTarget)) {
