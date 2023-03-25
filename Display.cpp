@@ -8,6 +8,7 @@
 // Connect SCL -> Port 21 on Arduino Mega
 // Connect SDA -> Port 20 on Arduino Mega
 
+#ifdef DISPLAY_ENABLED
 #include "U8glib.h"
 
 U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0 | U8G_I2C_OPT_NO_ACK | U8G_I2C_OPT_FAST); // Fast I2C / TWI
@@ -126,10 +127,12 @@ class Display: public Runnable {
               this->_print(5, 30, "  Start Game");
               this->_print(5, 50, "> Test Mode");
               if (buttonPressed()) {
-                // Update display.
-                displayStatus("Shoot targets");
                 // Change game state.
                 GameState = TESTING;
+                // Initialise activeTarget.
+                activeTarget = 1;
+                // Update display.
+                displayStatus("Shoot targets");
               }
               break;
           }    
@@ -253,6 +256,35 @@ class Display: public Runnable {
       }
     }
 };
+#else
+  // Empty class when display is disabled.
+  class Display: public Runnable {
+    public:
+      Display(byte clk, byte dt, byte btn) {
+      }
+      void setup() {
+        // We don't have display or menu, so we go straight into the game.
+        GameState = TESTING;
+        activeTarget = 1;
+      }
+      unsigned char priority() {
+        return 1;
+      }
+      void loop() {
+      }
+      void displayHit(unsigned char player, unsigned char target) {
+        Serial.println("Player " + String(player) + " hit " + String(target));
+      }
+      void displayMenu() {
+      }
+      void displayStatus(String msg) {
+        Serial.println("" + msg);
+      }
+      void displayScores() {
+        Serial.println("Player 1: " + String(scores[1]));
+      }
+  };
+#endif
 
 // Create instance of display.
 Display display(6, 7, 8);
