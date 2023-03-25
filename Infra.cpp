@@ -48,6 +48,12 @@ class Infra: public Runnable {
       receiver.resume();
       uint_fast8_t lengh = receiver.decodedIRData.rawDataPtr->rawlen;
 
+      // Show raw data when testing.
+      if (GameState == TESTING && lengh >= RAW_BUFFER_LENGTH) {
+        receiver.printIRResultRawFormatted(&Serial, false);
+        this->player = 1;
+      }
+
       if (receiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
         // Too many bytes received.
       }
@@ -134,6 +140,26 @@ class Infra: public Runnable {
 
     void loop() {
       // Loop will be controlled by parent class (Target).
+    }
+};
+
+#else
+
+// Empty class when Infra is disabled.
+class Infra {
+  uint_fast8_t pin;
+
+  public:
+    Infra(uint_fast8_t pin): pin(pin) {
+    }
+    uint_fast8_t getPin() {
+      return this->pin;
+    }
+    unsigned char getShot() {
+    }
+    void reset() {
+    }
+    bool isDisabled() {
     }
 };
 
