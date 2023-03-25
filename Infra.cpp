@@ -46,10 +46,10 @@ class Infra: public Runnable {
       }
 
       receiver.resume();
-      uint_fast8_t lengh = receiver.decodedIRData.rawDataPtr->rawlen;
+      uint_fast8_t length = receiver.decodedIRData.rawDataPtr->rawlen;
 
       // Show raw data when testing.
-      if (GameState == TESTING && lengh >= RAW_BUFFER_LENGTH) {
+      if (GameState == TESTING && length == RAW_BUFFER_LENGTH) {
         receiver.printIRResultRawFormatted(&Serial, false);
         this->player = 1;
       }
@@ -57,13 +57,13 @@ class Infra: public Runnable {
       if (receiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
         // Too many bytes received.
       }
-      else if (lengh < RAW_BUFFER_LENGTH) {
+      else if (length < RAW_BUFFER_LENGTH) {
         // Too few bytes received.
       }
       else {
         // Use data length to get the duration of the 3th and 1st position from the end.
-        d1 = receiver.decodedIRData.rawDataPtr->rawbuf[lengh - 3] * MICROS_PER_TICK;
-        d2 = receiver.decodedIRData.rawDataPtr->rawbuf[lengh - 1] * MICROS_PER_TICK;
+        d1 = receiver.decodedIRData.rawDataPtr->rawbuf[length - 3] * MICROS_PER_TICK;
+        d2 = receiver.decodedIRData.rawDataPtr->rawbuf[length - 1] * MICROS_PER_TICK;
       }
 
       // Ignore noise and bad readings.
