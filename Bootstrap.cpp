@@ -2,7 +2,14 @@
 // #define ON_EMULATOR
 
 // @todo use include for this file and in the port_test.ino file.
-const byte NUM_PORTS = 7;
+#if defined(ARDUINO_AVR_NANO) || defined(ARDUINO_AVR_NANO)
+  const byte NUM_PORTS = 1;
+  #define INFRA_ENABLED
+#else
+  const byte NUM_PORTS = 7;
+  #define DISPLAY_ENABLED
+#endif
+
 const byte PINS = 8;
 
 // Manual set number of targets. @todo use arrays and make this dynamic

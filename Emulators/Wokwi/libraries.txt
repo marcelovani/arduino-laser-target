@@ -7,3 +7,4 @@ Servo
 MillisTimer
 U8glib
 Bounce2
+IRremote
