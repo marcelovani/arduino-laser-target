@@ -3,6 +3,7 @@
 // https://www.tinkercad.com/things/30sClkF22Tl-copy-of-led-demo-with-classes/editel?tenant=circuits
 
 #include "Bootstrap.cpp"
+#include "Game.cpp"
 #include "Runnable.cpp"
 #include "MillisTimer.h"
 #include "MillisTimer.cpp"

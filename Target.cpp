@@ -140,8 +140,10 @@ class Target: public Runnable {
             // Update scores;
             scores[this->gunShot]++;
             delay(500);
+            rgb.off();
             // Update display.
             display.displayScores();
+            delay(1000);
           }
         }
         else {

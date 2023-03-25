@@ -4,10 +4,32 @@ class TargetRandomizer: public Runnable {
   private:
     unsigned char gunShot;
     MillisTimer _timerOn;
-    const byte start_delay = 5;
+    // How long to wait before changing targets.
+    const byte idle_delay = 2;
 
     unsigned char priority() {
       return 2;
+    }
+
+    /**
+     * Calculate delay based on game scores.
+     */
+    int getDelay() {
+      // Start with 5 seconds delay.
+      int delay = 5;
+
+      int game_level = game.getLevel();
+      display.displayStatus(String("Game Level " + String(game_level)));
+
+      // Reduce delay based on level.
+      delay = delay - (game_level - 1);
+
+      // Avoid negative numbers.
+      if (delay < 0) {
+        delay = 0;
+      }
+
+      return delay;
     }
 
     /**
@@ -40,11 +62,8 @@ class TargetRandomizer: public Runnable {
       }
 
       if (activeTarget > 0 && !this->_timerOn.isRunning()) {
-        // Timer delay to select a new target when there is no shoots.
-        randomSeed(analogRead(0));
-        // @todo reduce delay based on game level.
-        byte seconds = random(5) + this->start_delay;
-        display.displayStatus(String("Idle delay " + String(seconds) + "s"));
+        // Timed delay to select a new target when there are no shoots.
+        unsigned long seconds = this->getDelay() + this->idle_delay;
         this->timerOnStart(seconds);
       }
     }
@@ -87,10 +106,7 @@ class TargetRandomizer: public Runnable {
      * Reset game.
      */
     void reset() {
-      // Reset scores.
-      scores[1] = 0;
-      scores[2] = 0;
-      scores[3] = 0;
+      game.reset();
 
       // Reset targets.
       unsigned char p;
@@ -98,9 +114,6 @@ class TargetRandomizer: public Runnable {
         disabledTargets[p] = false;
         targets[p]->enable();
       }
-
-      // Game start.
-      GameState = PLAYING;
     }
 
   public:
@@ -130,11 +143,8 @@ class TargetRandomizer: public Runnable {
         this->_timerOn.stop();
         // Special code until timer is up and a new target is selected.
         activeTarget = 255;
-        // Random timer for next target selection.
-        randomSeed(analogRead(0));
-        // @todo reduce delay based on game level.
-        byte seconds = random(5);
-        Serial.println("Random start in " + String(seconds) + "s");
+        // Timed delay to select next target.
+        unsigned long seconds = this->getDelay();
         this->timerOnStart(seconds);
       }
     }
