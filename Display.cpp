@@ -278,7 +278,7 @@ class Display: public Runnable {
       void displayMenu() {
       }
       void displayStatus(String msg) {
-        Serial.println("" + msg);
+        Serial.println(msg);
       }
       void displayScores() {
         Serial.println("Player 1: " + String(scores[1]));

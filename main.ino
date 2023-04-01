@@ -13,9 +13,19 @@
 #include "RgbLed.cpp"
 #include "Arm.cpp"
 #include "Display.cpp"
+#include "Mp3Player.cpp"
 #include "Target.cpp"
 #include "TargetRandomizer.cpp"
 #include "Setup.cpp"
+
+void setup() {
+  Serial.begin(115200);
+  setupTargets();
+  #ifdef MP3_PLAYER_ENABLED
+    mp3.setup();
+  #endif
+  Runnable::setupAll();
+}
 
 void loop() {
   Runnable::loopAll();

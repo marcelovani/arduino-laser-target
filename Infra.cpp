@@ -52,6 +52,7 @@ class Infra: public Runnable {
       if (GameState == TESTING && length == RAW_BUFFER_LENGTH) {
         receiver.printIRResultRawFormatted(&Serial, false);
         this->player = 1;
+        return;
       }
 
       if (receiver.decodedIRData.flags & IRDATA_FLAGS_WAS_OVERFLOW) {
@@ -75,14 +76,14 @@ class Infra: public Runnable {
       if (d1 > t) {
         if (d2 < t) {
           this->player = 1;
-          Serial.println("***********");
+          // Serial.println("***********");
         } else {
-          Serial.println("***********     ***********     ***********");
+          // Serial.println("***********     ***********     ***********");
           this->player = 3;
         }
       }
       else if (d2 > t) {
-        Serial.println("***********     ***********");
+        // Serial.println("***********     ***********");
         this->player = 2;
       }
     }
@@ -130,8 +131,8 @@ class Infra: public Runnable {
     bool isDisabled() {
       if (!this->disabled) {
         if (this->getPin() == 0 || (this->bad_readings > this->bad_readings_limit)) {
-          Serial.println("Pin " + String(this->getPin()));
-          Serial.println("Bad readings " + String(this->bad_readings));
+          // Serial.println("Pin " + String(this->getPin()));
+          // Serial.println("Bad readings " + String(this->bad_readings));
           this->disabled = true;
         }
       }

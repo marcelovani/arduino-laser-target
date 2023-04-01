@@ -36,11 +36,8 @@
   int pins[NUM_PORTS+1][PINS+1] = {
     //     1   2   3   4   5   6   7   8    <- Wires
     { 00, 00, 00, 00, 00, 00, 00, 00, 00 }, // Unused
-    { 00, 00,  9,  5,  2,  7,  4, 00,  8 }, // 1 -> ok
+    { 00, 00, 12,  5,  2,  7,  4, 00,  8 }, // 1 -> ok
   };
-  //@todo add mp3
-  // rx 3
-  // tx 6
 #endif
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__)
@@ -110,19 +107,15 @@ RgbLed  rgb7(pins[7][8], pins[7][3], pins[7][5]);
 // Create instance of the target randomizer.
 TargetRandomizer randomizer;
 
-void setup() {
-  Serial.begin(115200);
-
+void setupTargets() {
   // Create instances of targets.
-  targets[1] = new Target(laser1, rgb1, arm1, ir1);
+  targets[1] = new Target(laser1, rgb1, arm1, ir1, 1, 1);
   #if ! defined(ARDUINO_AVR_NANO) && ! defined(ARDUINO_AVR_NANO)
-    targets[2] = new Target(laser2, rgb2, arm2, ir2);
-    targets[3] = new Target(laser3, rgb3, arm3, ir3);
-    targets[4] = new Target(laser4, rgb4, arm4, ir4);
-    targets[5] = new Target(laser5, rgb5, arm5, ir5);
-    targets[6] = new Target(laser6, rgb6, arm6, ir6);
-    targets[7] = new Target(laser7, rgb7, arm7, ir7);
+    targets[2] = new Target(laser2, rgb2, arm2, ir2, 2, 1);
+    targets[3] = new Target(laser3, rgb3, arm3, ir3, 3, 1);
+    targets[4] = new Target(laser4, rgb4, arm4, ir4, 2, 2);
+    targets[5] = new Target(laser5, rgb5, arm5, ir5, 1, 3);
+    targets[6] = new Target(laser6, rgb6, arm6, ir6, 3, 3);
+    targets[7] = new Target(laser7, rgb7, arm7, ir7, 3, 3);
   #endif
-
-  Runnable::setupAll();
 }

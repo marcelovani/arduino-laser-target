@@ -68,7 +68,8 @@
       "attrs": {}
     },
     { "type": "wokwi-ir-receiver", "id": "ir2", "top": -193.35, "left": 171.02, "attrs": {} },
-    { "type": "wokwi-ir-remote", "id": "remote1", "top": -155.72, "left": 340, "attrs": {} }
+    { "type": "wokwi-ir-remote", "id": "remote1", "top": -155.72, "left": 340, "attrs": {} },
+    { "type": "wokwi-microsd-card", "id": "mp3", "top": -49.88, "left": -191.06, "attrs": {} }
   ],
   "connections": [
     [ "servo2:GND", "bb2:bn.24", "black", [ "v0" ] ],
@@ -82,7 +83,7 @@
     [ "bb2:8b.j", "bb2:bn.6", "black", [ "v0" ] ],
     [ "nano:GND.2", "bb2:bn.2", "black", [ "v-54.21", "h43.8" ] ],
     [ "nano:5V", "bb2:bp.23", "red", [ "v28.13", "h276.94" ] ],
-    [ "nano:9", "servo2:PWM", "orange", [ "v-48.04", "h389.11" ] ],
+    [ "nano:12", "servo2:PWM", "orange", [ "v-48.04", "h389.11" ] ],
     [ "bb2:23t.e", "nano:2", "gold", [ "v142.05", "h-273.63" ] ],
     [ "bb2:13b.j", "nano:4", "green", [ "v83.61", "h-152.51" ] ],
     [ "bb2:17b.j", "nano:5", "green", [ "v90.62", "h-207.27" ] ],
@@ -108,7 +109,9 @@
     [ "led1:C", "bb2:12t.a", "", [ "$bb" ] ],
     [ "ir2:GND", "bb2:21t.a", "", [ "$bb" ] ],
     [ "ir2:VCC", "bb2:22t.a", "", [ "$bb" ] ],
-    [ "ir2:DAT", "bb2:23t.a", "", [ "$bb" ] ]
+    [ "ir2:DAT", "bb2:23t.a", "", [ "$bb" ] ],
+    [ "nano:10", "mp3:CS", "green", [ "v0" ] ],
+    [ "nano:9", "mp3:DI", "green", [ "v0" ] ]
   ],
   "serialMonitor": { "display": "always", "newline": "lf" },
   "dependencies": {}
