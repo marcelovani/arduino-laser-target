@@ -20,10 +20,14 @@
 
 void setup() {
   Serial.begin(115200);
-  setupTargets();
+
   #ifdef MP3_PLAYER_ENABLED
     mp3.setup();
+    // Play intro effects.
+    mp3.play(16, 30);
   #endif
+
+  setupTargets();
   Runnable::setupAll();
 }
 

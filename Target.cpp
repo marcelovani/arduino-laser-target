@@ -161,12 +161,12 @@ class Target: public Runnable {
 
         case 2:
           // Middle.
-          vol = 20;
+          vol = 25;
           break;
 
         case 3:
           // Away.
-          vol = 15;
+          vol = 20;
           break;
       }
 

@@ -19,3 +19,4 @@ Mapping for filenames on SD card:
 1. mp3/0013.mp3 - Shout left
 1. mp3/0014.mp3 - Shout right
 1. mp3/0015.mp3 - Shout stereo
+1. mp3/0016.mp3 - Intro stereo
