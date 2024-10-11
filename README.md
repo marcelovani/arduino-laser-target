@@ -1,5 +1,5 @@
 # Arduino Laser Targets
-A game using toy laser guns to shoot at targets. The targets will also soot back at you
+A game using toy laser tag guns to shoot at targets. The targets will also soot back at you
 using laser beams. When you hit the targets, they will drop.
 
 Picture (todo)
